@@ -9,8 +9,11 @@
 #pragma once
 
 #include <JuceHeader.h>
+
 #include "PluginProcessor.h"
+
 #include "SpectrogramComponent.h"
+
 
 //==============================================================================
 /**
@@ -25,19 +28,24 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
 
+
 private:
-    // GUI components
+      // GUI components
     juce::Slider cutoffKnob;
     juce::Slider resonanceKnob;
     juce::Slider driveKnob;
     SpectrogramComponent spectrogram;
 
-
     // Labels for the GUI components
     juce::Label cutoffLabel;
     juce::Label resonanceLabel;
     juce::Label driveLabel;
-    
+
+    // Attachment objects for linking the parameters to the GUI components
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> cutoffAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> resonanceAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> driveAttachment;
+
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     DRFilterAudioProcessor& audioProcessor;

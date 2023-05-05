@@ -10,9 +10,11 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-DRFilterAudioProcessorEditor::DRFilterAudioProcessorEditor (DRFilterAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+DRFilterAudioProcessorEditor::DRFilterAudioProcessorEditor(DRFilterAudioProcessor& p)
+    : AudioProcessorEditor(&p), audioProcessor(p)
+
 {
+
     // Set up the knobs
     cutoffKnob.setSliderStyle(juce::Slider::Rotary);
     cutoffKnob.setRange(0.0, 1.0, 0.01);
@@ -44,10 +46,15 @@ DRFilterAudioProcessorEditor::DRFilterAudioProcessorEditor (DRFilterAudioProcess
 
     // Add and make the spectrogram component visible
     addAndMakeVisible(spectrogram);
-    
+
+    // Create the AudioProcessorValueTreeState::SliderAttachment objects
+    cutoffAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "Cutoff", cutoffKnob);
+    resonanceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "Resonance", resonanceKnob);
+    driveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "Drive", driveKnob);
+
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 300);
+    setSize(400, 300);
 }
 
 DRFilterAudioProcessorEditor::~DRFilterAudioProcessorEditor()
@@ -60,9 +67,9 @@ void DRFilterAudioProcessorEditor::paint (juce::Graphics& g)
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
-//    g.setColour (juce::Colours::white);
-//    g.setFont (15.0f);
-//    g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
+    g.setColour (juce::Colours::white);
+    g.setFont (15.0f);
+    g.drawFittedText ("DRFilter", getLocalBounds(), juce::Justification::centred, 1);
 }
 
 void DRFilterAudioProcessorEditor::resized()
@@ -80,13 +87,14 @@ void DRFilterAudioProcessorEditor::resized()
 
     
     cutoffLabel.setBounds(margin, margin, knobWidth, knobHeight / 2);
-        resonanceLabel.setBounds(cutoffLabel.getRight() + margin, margin, knobWidth, knobHeight / 2);
-        driveLabel.setBounds(resonanceLabel.getRight() + margin, margin, knobWidth, knobHeight / 2);
+    resonanceLabel.setBounds(cutoffLabel.getRight() + margin, margin, knobWidth, knobHeight / 2);
+    driveLabel.setBounds(resonanceLabel.getRight() + margin, margin, knobWidth, knobHeight / 2);
 
-        cutoffKnob.setBounds(margin, getHeight() / 2 - knobHeight / 2, knobWidth, knobHeight);
-        resonanceKnob.setBounds(cutoffKnob.getX() + cutoffKnob.getWidth() + margin, getHeight() / 2 - knobHeight / 2, knobWidth, knobHeight);
-        driveKnob.setBounds(resonanceKnob.getX() + resonanceKnob.getWidth() + margin, getHeight() / 2 - knobHeight / 2, knobWidth, knobHeight);
+    cutoffKnob.setBounds(margin, getHeight() / 2 - knobHeight / 2, knobWidth, knobHeight);
+    resonanceKnob.setBounds(cutoffKnob.getX() + cutoffKnob.getWidth() + margin, getHeight() / 2 - knobHeight / 2, knobWidth, knobHeight);
+    driveKnob.setBounds(resonanceKnob.getX() + resonanceKnob.getWidth() + margin, getHeight() / 2 - knobHeight / 2, knobWidth, knobHeight);
 
     // TODO: Set the position and size of the spectrogram component
 
 }
+

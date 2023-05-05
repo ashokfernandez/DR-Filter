@@ -56,7 +56,22 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    juce::AudioProcessorValueTreeState apvts;
+
+
 private:
+    std::atomic<float>* cutoff = new std::atomic<float>(0);
+    std::atomic<float>* resonance = new std::atomic<float>(0);
+    std::atomic<float>* drive = new std::atomic<float>(0);
+    
+    // std::array<std::unique_ptr<juce::IIRFilter>, 2> iirFilterState;
+    // juce::dsp::IIR::Filter<float> filter;
+    // juce::dsp::Gain<float> driveGain;
+    // juce::dsp::ProcessSpec spec;
+
+    static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DRFilterAudioProcessor)
 };

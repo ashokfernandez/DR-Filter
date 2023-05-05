@@ -11,22 +11,129 @@
 
 //==============================================================================
 DRFilterAudioProcessor::DRFilterAudioProcessor()
-#ifndef JucePlugin_PreferredChannelConfigurations
-     : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                      #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                     #endif
-                       )
-#endif
+    : AudioProcessor(BusesProperties()
+            .withInput("Input", juce::AudioChannelSet::stereo(), true)
+            .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
+      apvts(*this, nullptr, "Parameters", createParameterLayout())
 {
+    // Create the parameter layout for the plugin
+    // auto layout = createParameterLayout();
+
+    // Add parameter listeners
+    // apvts.addParameterListener("cutoff", this);
+    // apvts.addParameterListener("resonance", this);
+    // apvts.addParameterListener("drive", this);
+
+    // Initialize the AudioProcessorValueTreeState object with the layout
+    // apvts = std::make_unique<juce::AudioProcessorValueTreeState>(*this, nullptr, "Parameters", std::move(layout));
+
+    // Set up the filter
+    // iirFilterState[0] = std::make_unique<juce::IIRFilter>();
+    // iirFilterState[1] = std::make_unique<juce::IIRFilter>();
+    // filter.setType(juce::dsp::IIR::FilterType::lowPass);
+    // filter.setCoefficients(juce::dsp::IIR::Coefficients<float>::makeLowPass(getSampleRate(), 1000.0f, 1.0f));
+    
+
+    // cutoff = apvts.getRawParameterValue("cutoff");
+    // resonance = apvts.getRawParameterValue("resonance");
+    // drive = apvts.getRawParameterValue("drive");
+
+    // Initialize the filter and gain objects
+    // spec.sampleRate = getSampleRate();
+    // spec.maximumBlockSize = getBlockSize();
+    // spec.numChannels = getTotalNumInputChannels();
+    
+    // filter.prepare(spec);
+    // driveGain.prepare(spec);
+
+    
+
+    // iirFilterState[0] = std::make_unique<juce::IIRFilter>();
+    // iirFilterState[1] = std::make_unique<juce::IIRFilter>();
+    
+    // Initialize filter coefficients with a low-pass filter, default cutoff frequency of 500 Hz, and Q-factor of 1
+    // float defaultCutoff = 500.0f;
+    // float defaultQ = 1.0f;
+    // filter.coefficients = juce::dsp::IIR::Coefficients<float>::makeLowPass(getSampleRate(), defaultCutoff, defaultQ);
+    // driveGain.setGainLinear(1.0f);
 }
 
 DRFilterAudioProcessor::~DRFilterAudioProcessor()
 {
+    // Remove listeners from the parameters
+    // apvts->removeParameterListener("cutoff", cutoffListener);
+    // apvts->removeParameterListener("resonance", resonanceListener);
+    // apvts->removeParameterListener("drive", driveListener);
 }
+
+// void DRFilterAudioProcessor::parameterChanged(const juce::String& parameterID, float newValue)
+// {
+//     if (parameterID == "cutoff")
+//     {
+//         cutoff = newValue;
+//         updateFilter();
+//     }
+//     else if (parameterID == "resonance")
+//     {
+//         resonance = newValue;
+//         updateFilter();
+//     }
+//     else if (parameterID == "drive")
+//     {
+//         drive = newValue;
+//         updateFilter();
+//     }
+// }
+
+
+// juce::AudioProcessorValueTreeState::ParameterLayout DRFilterAudioProcessor::createParameterLayout()
+// {
+//     // Create a ParameterLayout object to hold the parameters
+//     juce::AudioProcessorValueTreeState::ParameterLayout layout;
+
+//     // Create a unique ID for each parameter
+//     const juce::String cutoffID = "cutoff";
+//     const juce::String resonanceID = "resonance";
+//     const juce::String driveID = "drive";
+
+//     // Add the parameters to the layout, using version hints
+//     layout.add(std::make_unique<juce::AudioParameterFloat>(
+//         cutoffID, "Cutoff", juce::NormalisableRange<float>(20.0f, 20000.0f, 0.1f, 0.5f), 1000.0f, "Hz",
+//         juce::AudioProcessorParameter::genericParameter, nullptr, nullptr, true, 1));
+//     layout.add(std::make_unique<juce::AudioParameterFloat>(
+//         resonanceID, "Resonance", juce::NormalisableRange<float>(0.1f, 10.0f, 0.1f, 1.0f), 1.0f, "",
+//         juce::AudioProcessorParameter::genericParameter, nullptr, nullptr, true, 1));
+//     layout.add(std::make_unique<juce::AudioParameterFloat>(
+//         driveID, "Drive", juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f, 0.5f), 0.5f, "",
+//         juce::AudioProcessorParameter::genericParameter, nullptr, nullptr, true, 1));
+
+//     return layout;
+// }
+
+
+juce::AudioProcessorValueTreeState::ParameterLayout DRFilterAudioProcessor::createParameterLayout()
+{
+    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+
+    // Add parameters to the layout
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("Cutoff", 1), "Cutoff", 20.0f, 20000.0f, 1000.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("Resonance", 1), "Resonance", 1.0f, 5.0f, 1.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("Drive", 1), "Drive", 1.0f, 10.0f, 1.0f));
+
+    return layout;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 //==============================================================================
 const juce::String DRFilterAudioProcessor::getName() const
@@ -95,6 +202,12 @@ void DRFilterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+    // spec.sampleRate = sampleRate;
+    // spec.maximumBlockSize = (juce::uint32) samplesPerBlock;
+    // spec.numChannels = getTotalNumOutputChannels();
+
+    // filter.prepare(spec);
+    // driveGain.prepare(spec);
 }
 
 void DRFilterAudioProcessor::releaseResources()
@@ -129,34 +242,59 @@ bool DRFilterAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts)
 }
 #endif
 
-void DRFilterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void DRFilterAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    // juce::ScopedNoDenormals noDenormals;
+    // auto currentCutoff = cutoff->load();
+    // auto currentResonance = resonance->load();
+    // auto currentDrive = drive->load();
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+    auto cutoff = apvts.getRawParameterValue("Cutoff")->load();
+    auto resonance = apvts.getRawParameterValue("Resonance")->load();
+    auto drive = apvts.getRawParameterValue("Drive")->load();
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-//        auto* channelData = buffer.getWritePointer (channel);
 
-        // ..do something to the data...
-    }
+
+    // auto totalNumInputChannels  = getTotalNumInputChannels();
+    // auto totalNumOutputChannels = getTotalNumOutputChannels();
+
+    // for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+    //     buffer.clear(i, 0, buffer.getNumSamples());
+
+    // auto currentCutoff = apvts->getRawParameterValue("CUTOFF")->load();
+    // auto currentResonance = apvts->getRawParameterValue("RESONANCE")->load();
+    // auto currentDrive = apvts->getRawParameterValue("DRIVE")->load();
+
+    // if (currentCutoff != lastCutoff || currentResonance != lastResonance)
+    // {
+    //     for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    //     {
+    //         iirFilterState[channel]->setCoefficients(juce::IIRCoefficients::makeLowPass(getSampleRate(), currentCutoff, currentResonance));
+    //     }
+
+    //     lastCutoff = currentCutoff;
+    //     lastResonance = currentResonance;
+    // }
+
+    // for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    // {
+    //     auto* channelData = buffer.getWritePointer(channel);
+
+    //     if (currentDrive != lastDrive)
+    //     {
+    //         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+    //         {
+    //             channelData[sample] *= juce::jlimit<float>(1.0f, 10.0f, currentDrive);
+    //         }
+    //         lastDrive = currentDrive;
+    //     }
+
+    //     iirFilterState[channel]->processSamples(channelData, buffer.getNumSamples());
+    // }
 }
+
+
+
 
 //==============================================================================
 bool DRFilterAudioProcessor::hasEditor() const
@@ -170,18 +308,28 @@ juce::AudioProcessorEditor* DRFilterAudioProcessor::createEditor()
 }
 
 //==============================================================================
-void DRFilterAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void DRFilterAudioProcessor::getStateInformation(juce::MemoryBlock& memoryBlock)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+//    auto state = apvts->copyState();
+//    std::unique_ptr<juce::XmlElement> xml(state.createXml());
+//    memoryBlock.append(xml->toString().toRawUTF8(), xml->toString().getNumBytesAsUTF8() + 1);
 }
 
-void DRFilterAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void DRFilterAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+//    std::unique_ptr<juce::XmlElement> xmlState(juce::XmlDocument::parse(juce::String::createStringFromData(static_cast<const char*>(data), sizeInBytes)));
+//
+//    if (xmlState.get() != nullptr)
+//    {
+//        if (xmlState->hasTagName(apvts->state.getType()))
+//        {
+//            juce::ValueTree tree = juce::ValueTree::fromXml(*xmlState);
+//            apvts->replaceState(tree);
+//        }
+//    }
 }
+
+
 
 //==============================================================================
 // This creates new instances of the plugin..
