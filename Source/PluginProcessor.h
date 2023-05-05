@@ -60,16 +60,22 @@ public:
 
 
 private:
-    std::atomic<float>* cutoff = new std::atomic<float>(0);
-    std::atomic<float>* resonance = new std::atomic<float>(0);
-    std::atomic<float>* drive = new std::atomic<float>(0);
     
-    // std::array<std::unique_ptr<juce::IIRFilter>, 2> iirFilterState;
-    // juce::dsp::IIR::Filter<float> filter;
-    // juce::dsp::Gain<float> driveGain;
-    // juce::dsp::ProcessSpec spec;
-
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+
+    //==============================================================================
+    
+    // Declare the biquad filters for low-pass and high-pass
+    juce::dsp::IIR::Filter<float> lowPassFilter;
+    juce::dsp::IIR::Filter<float> highPassFilter;
+
+    // Declare the saturation processor object
+    juce::dsp::WaveShaper<float> saturationProcessor;
+
+    // Declare the ProcessSpec object
+    juce::dsp::ProcessSpec spec;
+
+    //==============================================================================
 
     
     //==============================================================================
