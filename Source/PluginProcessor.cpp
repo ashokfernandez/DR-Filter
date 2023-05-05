@@ -155,15 +155,24 @@ void DRFilterAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     auto drive = apvts.getRawParameterValue("Drive")->load();
 
     // Calculate the cutoff frequencies for the low-pass and high-pass filters with new frequency ranges
-    float lowPassCutoff = juce::jmap(cutoff, 0.0f, 1.0f, 20.0f, 20000.0f);
-    float highPassCutoff = juce::jmap(1.0f - cutoff, 0.0f, 1.0f, 20.0f, 20000.0f);
+    float lowPassCutoff = 21000.0f;
+
+    if (cutoff < 0.5) {
+        lowPassCutoff = juce::jmap(cutoff, 0.0f, 1.0f, 20.0f, 20000.0f);
+    }
+    
+    
+    float highPassCutoff = juce::jmap(-cutoff, 0.0f, 1.0f, 10000.0f, 20000.0f);
+    // float highPassCutoff = juce::jmap(1.0f - cutoff, 0.0f, 1.0f, 10000.0f, 20000.0f);
 
     // Map the resonance value to a valid Q factor range (0.1 to 10)
-    float Q = juce::jmap(resonance, 0.1f, 10.0f);
+    float Q = juce::jmap(resonance, 0.0f, 10.0f, 0.707f, 1.5f);
 
     // Set the filter coefficients for low-pass and high-pass filters
-    auto lpCoefficients = createFilterCoefficients(spec.sampleRate, lowPassCutoff, Q, true);
-    auto hpCoefficients = createFilterCoefficients(spec.sampleRate, highPassCutoff, Q, false);
+    // auto lpCoefficients = createFilterCoefficients(spec.sampleRate, lowPassCutoff, Q, true);
+    // auto hpCoefficients = createFilterCoefficients(spec.sampleRate, highPassCutoff, Q, false);
+    auto lpCoefficients = juce::dsp::IIR::Coefficients<float>::makeLowPass(spec.sampleRate, lowPassCutoff, Q);
+    auto hpCoefficients = juce::dsp::IIR::Coefficients<float>::makeHighPass(spec.sampleRate, highPassCutoff, Q);
 
 
     if (lpCoefficients && hpCoefficients)
@@ -180,16 +189,16 @@ void DRFilterAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
             {
                 // Apply the low-pass and high-pass filters
                 float lowPassSample = lowPassFilter.processSample(channelData[sample]);
-                float highPassSample = highPassFilter.processSample(channelData[sample]);
+                // float highPassSample = highPassFilter.processSample(channelData[sample]);
 
                 // Mix the low-pass and high-pass filtered signals
-                channelData[sample] = lowPassSample + highPassSample;
+                channelData[sample] = lowPassSample; // + highPassSample;
 
                 // Apply the drive control to the signal
-                // channelData[sample] *= drive;
+                 channelData[sample] *= drive;
 
                 // Apply the saturation effect
-                // channelData[sample] = saturationProcessor.processSample(channelData[sample]);
+                 channelData[sample] = saturationProcessor.processSample(channelData[sample]);
             }
         }
     }
