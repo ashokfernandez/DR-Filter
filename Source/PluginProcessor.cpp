@@ -57,32 +57,85 @@ void DRFilterAudioProcessor::parameterChanged(const juce::String& parameterID, f
     }
 }
 
-void DRFilterAudioProcessor::updateFilterCoefficients()
-{
+// IIR FILTER
+void DRFilterAudioProcessor::updateFilterCoefficients() { 
     auto cutoff = apvts.getRawParameterValue("Cutoff")->load();
     auto resonance = apvts.getRawParameterValue("Resonance")->load();
-    auto deadZone = FILTER_DEAD_ZONE;
+    auto sampleRate = getSampleRate();
     float Q = juce::jmap(resonance, 0.0f, 10.0f, 0.707f, 1.3f);
 
-    if (cutoff < -deadZone)
+    if (cutoff < -FILTER_DEAD_ZONE)
     {
-        float lowPassCutoff = juce::jmap(cutoff, -100.0f, -deadZone, 20.0f, 20000.0f);
-        stateVariableTPTFilter.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
-        stateVariableTPTFilter.setCutoffFrequency(lowPassCutoff);
-        stateVariableTPTFilter.setResonance(Q);
+        float lowPassCutoff = juce::jmap(cutoff, -100.0f, -FILTER_DEAD_ZONE, 20.0f, 20000.0f);
+        auto lowPassCoefficients = juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate, lowPassCutoff, Q);
+        filterProcessor.coefficients = lowPassCoefficients;
     }
-    else if (cutoff > deadZone)
+    else if (cutoff > FILTER_DEAD_ZONE)
     {
-        float highPassCutoff = juce::jmap(cutoff, deadZone, 100.0f, 20.0f, 20000.0f);
-        stateVariableTPTFilter.setType(juce::dsp::StateVariableTPTFilterType::highpass);
-        stateVariableTPTFilter.setCutoffFrequency(highPassCutoff);
-        stateVariableTPTFilter.setResonance(Q);
+        float highPassCutoff = juce::jmap(cutoff, FILTER_DEAD_ZONE, 100.0f, 20.0f, 7000.0f);
+        // float highPassCutoff = 5000.0f;
+        auto highPassCoefficients = juce::dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, highPassCutoff, Q);
+
+        // float cutoff = ...; // input value
+        // float deadZone = ...; // dead zone value
+        // float minValue = 20.0f; // minimum output value
+        // float maxValue = 7000.0f; // maximum output value
+        // float skewFactor = 2.0f; // skew factor
+
+        // // create a NormalisableRange with the given range and skew factor
+        // juce::NormalisableRange<float> range(minValue, maxValue, skewFactor);
+
+        // // map the input value to a normalized value
+        // float normalizedValue = range.convertTo0to1(cutoff);
+
+        // // map the normalized value to the output range
+        // float highPassCutoff = range.convertFrom0to1(normalizedValue);
+
+        // // outputValue now contains the mapped value with the skew factor applied
+
+
+        // // float skewFactor = 0.5f;
+        // // float skewedCutoff = std::pow(cutoff, skewFactor);
+        // // float highPassCutoff = juce::jmap(outputValue, FILTER_DEAD_ZONE, 100.0f, 20.0f, 7000.0f);
+        // auto highPassCoefficients = juce::dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, highPassCutoff, Q);
+        filterProcessor.coefficients = highPassCoefficients;
     }
     else
     {
-        stateVariableTPTFilter.reset();
+        auto allPassCoefficients = juce::dsp::IIR::Coefficients<float>::makeAllPass(sampleRate, 1000.0f); // Replace 1000.0f with the desired frequency
+        filterProcessor.coefficients = allPassCoefficients;
     }
 }
+
+
+
+// STATE VARIABLE FILTER
+// void DRFilterAudioProcessor::updateFilterCoefficients()
+// {
+//     auto cutoff = apvts.getRawParameterValue("Cutoff")->load();
+//     auto resonance = apvts.getRawParameterValue("Resonance")->load();
+//     auto deadZone = FILTER_DEAD_ZONE;
+//     float Q = juce::jmap(resonance, 0.0f, 10.0f, 0.707f, 1.3f);
+
+//     if (cutoff < -deadZone)
+//     {
+//         float lowPassCutoff = juce::jmap(cutoff, -100.0f, -deadZone, 20.0f, 20000.0f);
+//         stateVariableTPTFilter.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
+//         stateVariableTPTFilter.setCutoffFrequency(lowPassCutoff);
+//         stateVariableTPTFilter.setResonance(Q);
+//     }
+//     else if (cutoff > deadZone)
+//     {
+//         float highPassCutoff = juce::jmap(cutoff, deadZone, 100.0f, 20.0f, 20000.0f);
+//         stateVariableTPTFilter.setType(juce::dsp::StateVariableTPTFilterType::highpass);
+//         stateVariableTPTFilter.setCutoffFrequency(highPassCutoff);
+//         stateVariableTPTFilter.setResonance(Q);
+//     }
+//     else
+//     {
+//         stateVariableTPTFilter.reset();
+//     }
+// }
 
 //==============================================================================
 // AUDIO PROCESSING
@@ -99,11 +152,63 @@ void DRFilterAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBloc
     stateVariableTPTFilter.reset();
     updateFilterCoefficients();
 
+    filterProcessor.prepare(spec);
+    filterProcessor.reset();
+
     // Prepare waveshaper
     saturationProcessor.prepare(spec);
     saturationProcessor.reset();
     // updateSaturation();
 }
+
+// void DRFilterAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+// {
+//     // No denormals ensures that the processor does not hang on denormalized numbers
+//     juce::ScopedNoDenormals noDenormals;
+
+//     auto totalNumInputChannels = getTotalNumInputChannels();
+//     auto totalNumOutputChannels = getTotalNumOutputChannels();
+//     auto cutoff = apvts.getRawParameterValue("Cutoff")->load();
+
+//     // Clear the output channels to avoid processing uninitialized data
+//     for (auto i = 0; i < totalNumOutputChannels; ++i)
+//     {
+//         if (i < totalNumInputChannels)
+//             continue;
+
+//         buffer.clear(i, 0, buffer.getNumSamples());
+//     }
+
+//     // Process each channel
+//     for (int channel = 0; channel < totalNumInputChannels; ++channel)
+//     {
+//         auto* channelData = buffer.getWritePointer(channel);
+//         juce::dsp::AudioBlock<float> audioBlock(buffer);
+//         juce::dsp::AudioBlock<float> singleChannelBlock = audioBlock.getSingleChannelBlock(channel);
+//         juce::dsp::ProcessContextReplacing<float> context(singleChannelBlock);
+
+//         // STATE VARIABLE FILTER
+//         // If not in the deadzone, process the filter
+//         // if (cutoff > deadZone || cutoff < -deadZone)
+//         // {
+//             // Process the filter
+//             // stateVariableTPTFilter.process(context);
+//         // }
+
+//         // IIR FILTER
+//         // If not in the deadzone, process the filter
+//         if (cutoff > FILTER_DEAD_ZONE || cutoff < -FILTER_DEAD_ZONE)
+//         {
+//             // Process the filter
+//             filterProcessor.process(context);
+//         }
+        
+        
+//         // Process the waveshaper
+//         // saturationProcessor.process(context);
+//     }
+// }
+
 
 void DRFilterAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
@@ -113,7 +218,6 @@ void DRFilterAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
     auto cutoff = apvts.getRawParameterValue("Cutoff")->load();
-    auto deadZone = FILTER_DEAD_ZONE;
 
     // Clear the output channels to avoid processing uninitialized data
     for (auto i = 0; i < totalNumOutputChannels; ++i)
@@ -127,22 +231,41 @@ void DRFilterAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     // Process each channel
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
-        auto* channelData = buffer.getWritePointer(channel);
-        juce::dsp::AudioBlock<float> audioBlock(buffer);
-        juce::dsp::AudioBlock<float> singleChannelBlock = audioBlock.getSingleChannelBlock(channel);
+        // Create a separate buffer for each channel
+        juce::AudioBuffer<float> channelBuffer(1, buffer.getNumSamples());
+        channelBuffer.copyFrom(0, 0, buffer.getReadPointer(channel), buffer.getNumSamples());
+
+        // Create an audio block from the channel buffer
+        juce::dsp::AudioBlock<float> singleChannelBlock(channelBuffer);
+
+        // Process the channel
         juce::dsp::ProcessContextReplacing<float> context(singleChannelBlock);
 
+        // STATE VARIABLE FILTER
         // If not in the deadzone, process the filter
-        if (cutoff > deadZone || cutoff < -deadZone)
+        // if (cutoff > deadZone || cutoff < -deadZone)
+        // {
+            // Process the filter
+            // stateVariableTPTFilter.process(context);
+        // }
+
+        // IIR FILTER
+        // If not in the deadzone, process the filter
+        if (cutoff > FILTER_DEAD_ZONE || cutoff < -FILTER_DEAD_ZONE)
         {
             // Process the filter
-            stateVariableTPTFilter.process(context);
+            filterProcessor.process(context);
         }
-        
+
         // Process the waveshaper
-        saturationProcessor.process(context);
+        // saturationProcessor.process(context);
+
+        // Copy the processed data back into the original buffer
+        buffer.copyFrom(channel, 0, channelBuffer.getReadPointer(0), channelBuffer.getNumSamples());
     }
 }
+
+
 
 void DRFilterAudioProcessor::releaseResources()
 {

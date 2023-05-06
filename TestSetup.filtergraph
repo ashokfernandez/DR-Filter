@@ -62,13 +62,13 @@
     </LAYOUT>
   </FILTER>
   <FILTER uid="6" x="0.42" y="0.275" useARA="0" uiLastX_Normal="51" uiLastY_Normal="163"
-          uiopen_Normal="0">
+          uiopen_Normal="1">
     <PLUGIN name="AUAudioFilePlayer" format="AudioUnit" category="Generator"
             manufacturer="Apple" version="1.6.0" file="AudioUnit:Generators/augn,afpl,appl"
-            uniqueId="6163676e" isInstrument="0" fileTime="0" infoUpdateTime="187eed00559"
+            uniqueId="6163676e" isInstrument="0" fileTime="0" infoUpdateTime="187f2d9700c"
             numInputs="0" numOutputs="2" isShell="0" hasARAExtension="0"
             uid="6163676e"/>
-    <STATE>590.hAGaoMGcv.C1AHv.DTfAGfPBJr.Gc3wGgvUag4VclE1XzUmbkIGUjEFcg8EDarVPUAkbkMWYzAUYxMWZyQWYtQ2TzEFcksTY4c0b0IFc4AWYWYWYxMWZu4FUzkGbk8EDOXVZrUVKxUlYkIWYtMVYyQkag0VYRDFbvwFPgxvzM3vCPDwEXYTZrUlSg0VYWIUYmk1atMmWIM2TkwVYiQWYjYTZrU1WP.1KUMWYxM2KgMGZuslYkImag4FYko2KMU2boM1KAIFakQ2at8RUyUlbfvTZhIWXxk2KSEVavwVYy8RRsA2axQWYj8BUVQzW4.yWxU1bg0FbrUFYeIlbkE1ZeMVch4xcgYWnRP8DTTgEWfwEZ3kTkcVZu4FQuU1bL81avokTkcVZu4FQgQWXeAADIM2TkwVYiQWYjIUYmk1atokTkcVZu4lSg0VYI7DDvA...........UDN...X...................XiaTP...........I.........P0TIwDB....A....................................................B...........rkC...3yATBZ4TY2AhTkcVZu4VBRDlYvwFD.HQX0claQCBDVYTZrUFHwfUUtQWZzwVYjA.B.jA.l.vJ.jD.QAPV.3E.vAPc.nG.6APe.PH.MBPk.PZ.GDPBAHQ.gD.KA7S.JEvRA3a.+FfxArb.PGfzAbc.ZGP3........BD..........h...................AnN</STATE>
+    <STATE>875.hAGaoMGcv.C1AHv.DTfAGfPBJr.IkXxIpvUag4VclE1XzUmbkIGUjEFcg8EDarVPUAkbkMWYzAUYxMWZyQWYtQ2TzEFcksTY4c0b0IFc4AWYWYWYxMWZu4FUzkGbk8EDOXVZrUVKxUlYkIWYtMVYyQkag0VYRDFbvwFPhxfFR2fCO.AVFkFak4TXsU1URU1Yo8lay8EDf8RUyUlby8RXyg1aqYVYx4VXtQVY58RS0MWZi8RPhwVYz8lauT0bkIGHLklXxElb48xTg0FbrU1bujTav8lbzUFYuPkUD8UNv7kbkMWXsAGakQ1WhIWYgs1WiUmXtbWX1EZDTKwDTTgEWXQFdIUYmk1atQzakMGSu8FbZIUYmk1atQTXzE1WP.QRyMUYrU1XzUFYRU1Yo8laZIUYmk1at4TXsUVBOAAb...........PEgC...F...................13FED..........PB.........TMURLg....P....................................................f............a4....9b.kfVNU1cfHUYmk1atMcCNrAGcXgWIM2TkwVYiQWYjYTZrU1WP31KUMWYxM2KgMGZuslYkImag4FYko2KD81ctw1agQ1bu7larkWavMiKz8FHs.xRk4lZoABRo4VXfzBH2XiLfrUQMUjTAwDQvDCMC0UKtQTZJQSY0oFaAEUKxTiMq0RL1TCM1XSLy.CM4jyMtzFbyDpGTKwDTTwGfXgHH7DDvA..........f637A..X...................XiaTP..........PUUUUUUUUUUUUUUUUUUUUUA....TUUUUE..........................................B...........XL1...3yATBZ4TY2AhTkcVZu4VBRDlYvwFD.HQX0claRiRJOvgUFkFakARLVYTZrUFHxfUUtQWZzwVYjA.B.jA.l.vJ.jD.QAPV.3E.vAPc.nG.6Afe.LH.LB.k.bO.4Gf.ADQ.bDvKAnS.6DfqA7Z.5FPvA.s.AIvPBvj.MI.vBDr.LKPyBHs.TKP1B3s.kK.6........BD..........q...................BTO</STATE>
     <LAYOUT>
       <INPUTS/>
       <OUTPUTS>
@@ -80,7 +80,7 @@
           uiLastY_Normal="239" uiopen_Normal="0">
     <PLUGIN name="DR Filter" format="VST3" category="Fx|Filter" manufacturer="Side Effects"
             version="1.0.0" file="/Users/ashokfernandez/Software/DR Filter/Builds/MacOSX/build/Debug/DR Filter.vst3"
-            uniqueId="ac02e07e" isInstrument="0" fileTime="187eecfb847" infoUpdateTime="187eed00559"
+            uniqueId="ac02e07e" isInstrument="0" fileTime="187f140c89f" infoUpdateTime="187f2d9700d"
             numInputs="2" numOutputs="2" isShell="0" hasARAExtension="0"
             uid="ad72036d"/>
     <STATE>191.VMjLgXK....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9XCLt3hKt3hKt3hKt3hYRUUSTEETIckVwTjQisVTTgkdEYjKAQjYPQSPWgUdMcjKAQjct3hdA4hKt3hKt3hKtnTUv.UQAslXuk0UXoWUFE0YQcEV77RRC8Vav8lak4Fc9vyKVMEUy.Ea0cVZtMEcgQWY9..</STATE>
