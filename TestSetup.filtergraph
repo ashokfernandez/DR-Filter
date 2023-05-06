@@ -65,7 +65,7 @@
           uiopen_Normal="0">
     <PLUGIN name="AUAudioFilePlayer" format="AudioUnit" category="Generator"
             manufacturer="Apple" version="1.6.0" file="AudioUnit:Generators/augn,afpl,appl"
-            uniqueId="6163676e" isInstrument="0" fileTime="0" infoUpdateTime="187edae4da5"
+            uniqueId="6163676e" isInstrument="0" fileTime="0" infoUpdateTime="187eed00559"
             numInputs="0" numOutputs="2" isShell="0" hasARAExtension="0"
             uid="6163676e"/>
     <STATE>590.hAGaoMGcv.C1AHv.DTfAGfPBJr.Gc3wGgvUag4VclE1XzUmbkIGUjEFcg8EDarVPUAkbkMWYzAUYxMWZyQWYtQ2TzEFcksTY4c0b0IFc4AWYWYWYxMWZu4FUzkGbk8EDOXVZrUVKxUlYkIWYtMVYyQkag0VYRDFbvwFPgxvzM3vCPDwEXYTZrUlSg0VYWIUYmk1atMmWIM2TkwVYiQWYjYTZrU1WP.1KUMWYxM2KgMGZuslYkImag4FYko2KMU2boM1KAIFakQ2at8RUyUlbfvTZhIWXxk2KSEVavwVYy8RRsA2axQWYj8BUVQzW4.yWxU1bg0FbrUFYeIlbkE1ZeMVch4xcgYWnRP8DTTgEWfwEZ3kTkcVZu4FQuU1bL81avokTkcVZu4FQgQWXeAADIM2TkwVYiQWYjIUYmk1atokTkcVZu4lSg0VYI7DDvA...........UDN...X...................XiaTP...........I.........P0TIwDB....A....................................................B...........rkC...3yATBZ4TY2AhTkcVZu4VBRDlYvwFD.HQX0claQCBDVYTZrUFHwfUUtQWZzwVYjA.B.jA.l.vJ.jD.QAPV.3E.vAPc.nG.6APe.PH.MBPk.PZ.GDPBAHQ.gD.KA7S.JEvRA3a.+FfxArb.PGfzAbc.ZGP3........BD..........h...................AnN</STATE>
@@ -80,7 +80,7 @@
           uiLastY_Normal="239" uiopen_Normal="0">
     <PLUGIN name="DR Filter" format="VST3" category="Fx|Filter" manufacturer="Side Effects"
             version="1.0.0" file="/Users/ashokfernandez/Software/DR Filter/Builds/MacOSX/build/Debug/DR Filter.vst3"
-            uniqueId="ac02e07e" isInstrument="0" fileTime="187ed69c641" infoUpdateTime="187edae4da5"
+            uniqueId="ac02e07e" isInstrument="0" fileTime="187eecfb847" infoUpdateTime="187eed00559"
             numInputs="2" numOutputs="2" isShell="0" hasARAExtension="0"
             uid="ad72036d"/>
     <STATE>191.VMjLgXK....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9XCLt3hKt3hKt3hKt3hYRUUSTEETIckVwTjQisVTTgkdEYjKAQjYPQSPWgUdMcjKAQjct3hdA4hKt3hKt3hKtnTUv.UQAslXuk0UXoWUFE0YQcEV77RRC8Vav8lak4Fc9vyKVMEUy.Ea0cVZtMEcgQWY9..</STATE>

@@ -13,7 +13,8 @@
 //==============================================================================
 /**
 */
-class DRFilterAudioProcessor  : public juce::AudioProcessor
+class DRFilterAudioProcessor  : public juce::AudioProcessor,
+                                public juce::AudioProcessorValueTreeState::Listener
                             #if JucePlugin_Enable_ARA
                              , public juce::AudioProcessorARAExtension
                             #endif
@@ -56,26 +57,38 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    void parameterChanged(const juce::String& parameterID, float newValue) override;
+
     juce::AudioProcessorValueTreeState apvts;
 
 
 private:
     
+    void updateFilterCoefficients();
+    void updateSaturation();
+    static float saturationFunction(float x);
+
+
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
     //==============================================================================
     
-    // Declare the biquad filters for low-pass and high-pass
-    juce::dsp::IIR::Filter<float> lowPassFilter;
-    juce::dsp::IIR::Filter<float> highPassFilter;
+    // Declare the state variable filter for stereo audio processing
+    juce::dsp::StateVariableTPTFilter<float> stateVariableTPTFilter;
 
     // Declare the saturation processor object
     juce::dsp::WaveShaper<float> saturationProcessor;
+    static std::atomic<float> saturationAmount;
 
     // Declare the ProcessSpec object
     juce::dsp::ProcessSpec spec;
 
+  
+
+    
+
     //==============================================================================
+
 
     
     //==============================================================================
