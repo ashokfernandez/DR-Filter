@@ -8,6 +8,10 @@
               companyWebsite="www.sideeffectsaudio.com" pluginFormats="buildAU,buildAUv3,buildStandalone,buildVST3">
   <MAINGROUP id="EkPDKl" name="DR Filter">
     <GROUP id="{A558ECD0-2532-A68D-9E27-47566440E0AC}" name="Source">
+      <FILE id="HbUuC8" name="CustomWaveshaper.cpp" compile="1" resource="0"
+            file="Source/CustomWaveshaper.cpp"/>
+      <FILE id="isfykE" name="CustomWaveshaper.h" compile="0" resource="0"
+            file="Source/CustomWaveshaper.h"/>
       <FILE id="pf4eZg" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="A3Smgp" name="PluginProcessor.h" compile="0" resource="0"

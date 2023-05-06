@@ -9,6 +9,10 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "CustomWaveShaper.h"
+
+// How many values on either side of zero the filter will stay disabled for
+#define FILTER_DEAD_ZONE 5.0f
 
 //==============================================================================
 /**
@@ -61,13 +65,11 @@ public:
 
     juce::AudioProcessorValueTreeState apvts;
 
+    
 
 private:
     
     void updateFilterCoefficients();
-    void updateSaturation();
-    static float saturationFunction(float x);
-
 
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
@@ -77,8 +79,10 @@ private:
     juce::dsp::StateVariableTPTFilter<float> stateVariableTPTFilter;
 
     // Declare the saturation processor object
-    juce::dsp::WaveShaper<float> saturationProcessor;
-    static std::atomic<float> saturationAmount;
+    // juce::dsp::WaveShaper<float> saturationProcessor;
+    // Declare the CustomWaveShaper object
+    CustomWaveShaper saturationProcessor;
+
 
     // Declare the ProcessSpec object
     juce::dsp::ProcessSpec spec;

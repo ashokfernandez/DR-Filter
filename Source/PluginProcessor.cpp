@@ -14,11 +14,9 @@ DRFilterAudioProcessor::DRFilterAudioProcessor()
     : AudioProcessor(BusesProperties()
             .withInput("Input", juce::AudioChannelSet::stereo(), true)
             .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
-      apvts(*this, nullptr, "Parameters", createParameterLayout())
+      apvts(*this, nullptr, "Parameters", createParameterLayout()),
+      saturationProcessor(apvts)
 {
-    // Set the saturation function to the static saturationFunction
-    saturationProcessor.functionToUse = &DRFilterAudioProcessor::saturationFunction;
-
     // Add parameter listeners    
     apvts.addParameterListener("Cutoff", this);
     apvts.addParameterListener("Resonance", this);
@@ -52,34 +50,34 @@ void DRFilterAudioProcessor::parameterChanged(const juce::String& parameterID, f
     {
         updateFilterCoefficients();
     }
-    else if (parameterID == "Drive")
-    {
-        updateSaturation();
-    }
+    // else if (parameterID == "Drive")
+    // {
+    //     updateSaturation();
+    // }
 }
 
 // Define the static member variable in the implementation file
-std::atomic<float> DRFilterAudioProcessor::saturationAmount;
+// std::atomic<float> DRFilterAudioProcessor::saturationAmount;
 
-void DRFilterAudioProcessor::updateSaturation()
-{
-    auto drive = apvts.getRawParameterValue("Drive")->load();
-    saturationAmount.store(juce::jmap(drive, 0.0f, 100.0f, 1.0f, 50.0f));
-}
+// void DRFilterAudioProcessor::updateSaturation()
+// {
+    // auto drive = apvts.getRawParameterValue("Drive")->load();
+    // saturationAmount.store(juce::jmap(drive, 0.0f, 100.0f, 1.0f, 50.0f));
+// }
 
-float DRFilterAudioProcessor::saturationFunction(float x)
-{
-    auto saturationAmountLocal = saturationAmount.load();
-    float saturated = std::atan(saturationAmountLocal * x) / std::atan(saturationAmountLocal);
-    return saturated;
-}
-
+// float DRFilterAudioProcessor::SaturationFunction::operator()(float x) const
+// {
+//     auto drive = parameters.getRawParameterValue("Drive")->load();
+//     auto saturationAmount = juce::jmap(drive, 0.0f, 100.0f, 1.0f, 50.0f);
+//     float saturated = std::atan(saturationAmount * x) / std::atan(saturationAmount);
+//     return saturated;
+// }
 
 void DRFilterAudioProcessor::updateFilterCoefficients()
 {
     auto cutoff = apvts.getRawParameterValue("Cutoff")->load();
     auto resonance = apvts.getRawParameterValue("Resonance")->load();
-    auto deadZone = 5.0f;
+    auto deadZone = FILTER_DEAD_ZONE;
     float Q = juce::jmap(resonance, 0.0f, 10.0f, 0.02f, 1.5f);
 
     if (cutoff < -deadZone)
@@ -98,9 +96,7 @@ void DRFilterAudioProcessor::updateFilterCoefficients()
     }
     else
     {
-        stateVariableTPTFilter.setType(juce::dsp::StateVariableTPTFilterType::bandpass);
-        stateVariableTPTFilter.setCutoffFrequency(20000.0f);
-        stateVariableTPTFilter.setResonance(0.1f);
+        stateVariableTPTFilter.reset();
     }
 }
 
@@ -188,7 +184,7 @@ void DRFilterAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBloc
     // Prepare waveshaper
     saturationProcessor.prepare(spec);
     saturationProcessor.reset();
-    updateSaturation();
+    // updateSaturation();
 }
 
 
@@ -198,6 +194,8 @@ void DRFilterAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
 
     auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
+    auto cutoff = apvts.getRawParameterValue("Cutoff")->load();
+    auto deadZone = FILTER_DEAD_ZONE;
 
     for (auto i = 0; i < totalNumOutputChannels; ++i)
     {
@@ -210,12 +208,21 @@ void DRFilterAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer(channel);
-
-        // Process the filter
         juce::dsp::AudioBlock<float> audioBlock(buffer);
         juce::dsp::AudioBlock<float> singleChannelBlock = audioBlock.getSingleChannelBlock(channel);
         juce::dsp::ProcessContextReplacing<float> context(singleChannelBlock);
-        stateVariableTPTFilter.process(context);
+
+        // If not in the deadzone, process the filter
+        if (cutoff > deadZone || cutoff < -deadZone)
+        {
+            // Process the filter
+            stateVariableTPTFilter.process(context);
+        }
+        
+        // juce::dsp::AudioBlock<float> audioBlock(buffer);
+        // juce::dsp::AudioBlock<float> singleChannelBlock = audioBlock.getSingleChannelBlock(channel);
+        // juce::dsp::ProcessContextReplacing<float> context(singleChannelBlock);
+        // stateVariableTPTFilter.process(context);
 
         // Process the waveshaper
         saturationProcessor.process(context);
