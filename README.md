@@ -8,26 +8,24 @@
                                                                                         side effects    
 
 
-DR Filter is an audio plugin written in C++ using JUCE v7.0.5.
+
+
+
+
+## Features
+- Single-knob filter, just like a DJ mixer
+- Cutoff control goes from low pass on the left to high pass on the right
+- Filter is completely removed from the signal when cutoff is in the middle
+- Resonance control to adjust the level of the peak of the filter
+- Drive control to add a warm analog sound to your audio
+- Available in Audio Unit (AU) and Virtual Studio Technology (VST) formats and is compatible with macOS and probably Windows
 
 **Note: Currently, the plugin has only been compiled in Xcode on macOS. However, it should work with JUCE on other operating systems.**
 
-## Features
-
-- Cutoff control which goes from low pass on the left to high pass on the right, with the filter completely removed from the signal in the middle
-- Resonance control which controls the level of the peak of the filter
-- Drive control which controls the amount of saturation applied. The saturation has a warm analog sound
-- Low-latency processing for use in real-time audio applications
-- Available in Audio Unit (AU) and Virtual Studio Technology (VST) formats
-- Cross-platform compatibility (Windows, macOS, Linux)
-
 ## Installation
+DR Filter is an audio plugin written in C++ using JUCE v7.0.5.
 
-To install DR Filter, follow these steps:
-
-1. Download and install [JUCE v7.0.5](https://juce.com/).
-2. Build the plugin using your preferred build system or IDE.
-3. Add the built plugin to your preferred Digital Audio Workstation (DAW) or standalone audio application.
+To use DR Filter, you need to download and install JUCE. You can set up Xcode on macOS or Visual Studio on Windows to compile JUCE by following the instructions in the JUCE documentation. Once you have JUCE installed, build the plugin using your preferred build system or IDE, and add it to your preferred Digital Audio Workstation (DAW) or standalone audio application.
 
 **For macOS:**
 
@@ -36,29 +34,28 @@ To install DR Filter, follow these steps:
 
 **For Windows:**
 
-- To install an Audio Unit, copy the built plugin (.dll file) to the appropriate VST plugins folder for your DAW (usually `C:\Program Files\Vstplugins` or `C:\Program Files (x86)\Vstplugins`).
 - To install a VST, copy the built plugin (.dll file) to the appropriate VST plugins folder for your DAW (usually `C:\Program Files\Vstplugins` or `C:\Program Files (x86)\Vstplugins`).
 
-[Insert additional installation instructions here, if needed]
+After installation, you're ready to use DR Filter in your DAW!
 
 ## Usage
-
 To use DR Filter, add it as an effect in your preferred Digital Audio Workstation (DAW) or standalone audio application. 
 
-**For macOS:**
+### Ableton
+To use DR Filter in Ableton, follow these steps:
+1. Open Ableton and create a new audio track.
+2. Click on the "Audio Effects" category on the left-hand side of the screen and select "AU DR Filter" or "VST DR Filter" depending on the version you installed.
+3. Drag DR Filter onto the track.
+4. Adjust the filter parameters by clicking and dragging the knob controls.
 
-- To add an Audio Unit, open the DAW's plugin manager, locate DR Filter in the list of installed plugins, and click "Enable."
-- To add a VST, open the DAW's plugin manager, locate the VST plugins folder, and scan for new plugins. DR Filter should appear in the list of available plugins.
+### Logic Pro X
+To use DR Filter in Logic Pro X, follow these steps:
+1. Open Logic Pro X and create a new audio track.
+2. Click on the "Mixer" button in the top right corner of the screen to show the mixer.
+3. Click on the "Inserts" button on the audio track and select "AU DR Filter" or "VST DR Filter" depending on the version you installed.
+4. Adjust the filter parameters by clicking and dragging the knob controls.
 
-**For Windows:**
+**Note:** These instructions are for demonstration purposes only and may vary depending on your version of Ableton or Logic Pro X.
 
-- To add an Audio Unit, most DAWs do not support Audio Units on Windows. Use the VST version instead.
-- To add a VST, open the DAW's plugin manager, locate the VST plugins folder, and scan for new plugins. DR Filter should appear in the list of available plugins.
-
-[Insert additional usage instructions or examples here, if needed]
-
-## License
-
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
-
-Is there anything else you would like to add to the README?
+## Testing
+To test DR Filter, we recommend compiling AudioPluginHost from JUCE on your own computer. Instructions on how to do this can be found in the JUCE SDK. Once you have AudioPluginHost set up, you can test DR Filter by adding it as an effect and adjusting the filter parameters.
