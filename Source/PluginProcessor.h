@@ -79,10 +79,7 @@ private:
     juce::dsp::StateVariableTPTFilter<float> stateVariableTPTFilter;
 
     // Declare the saturation processor object
-    // juce::dsp::WaveShaper<float> saturationProcessor;
-    // Declare the CustomWaveShaper object
     CustomWaveShaper saturationProcessor;
-
 
     // Declare the ProcessSpec object
     juce::dsp::ProcessSpec spec;
