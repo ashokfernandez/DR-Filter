@@ -14,6 +14,10 @@
 // How many values on either side of zero the filter will stay disabled for
 #define FILTER_DEAD_ZONE 5.0f
 
+// Minimum and maximum Q values for the filter, starting at 0.707 (butterworth) up to spikey
+#define FILTER_Q_MIN 0.707f
+#define FILTER_Q_MAX 5.0f
+
 //==============================================================================
 /**
 */
@@ -76,8 +80,10 @@ private:
     //==============================================================================
     
     // Declare the state variable filter for stereo audio processing
-    juce::dsp::StateVariableTPTFilter<float> stateVariableTPTFilter;
-    juce::dsp::IIR::Filter<float> filterProcessor;
+    // juce::dsp::StateVariableTPTFilter<float> stateVariableTPTFilter;
+    // juce::dsp::IIR::Filter<float> filterProcessor;
+    
+    juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> filterProcessor;
     // filterProcessor
 
     // Declare the saturation processor object
