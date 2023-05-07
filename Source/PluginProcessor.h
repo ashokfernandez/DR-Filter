@@ -18,6 +18,17 @@
 #define FILTER_Q_MIN 0.707f
 #define FILTER_Q_MAX 5.0f
 
+// Skew factor for non-linear mapping of parameters 
+#define CUTOFF_SKEW_FACTOR 0.99f
+
+// Max and min hearing frequencies
+#define MAX_FREQ 20000.0f
+#define MIN_FREQ 20.0f
+
+// Time factor used to smooth parameter changes
+#define SMOOTHING_TIME_SECONDS 0.05f
+#define NORMALISED_INTERNAL 0.1f
+
 //==============================================================================
 /**
 */
@@ -72,34 +83,21 @@ public:
     
 
 private:
-    
-    void updateFilterCoefficients();
-
+    // Parameter setup
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
-    //==============================================================================
-    
-    // Declare the state variable filter for stereo audio processing
-    // juce::dsp::StateVariableTPTFilter<float> stateVariableTPTFilter;
-    // juce::dsp::IIR::Filter<float> filterProcessor;
-    
+    // Signal chain objects
+    juce::dsp::ProcessSpec spec;
     juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> filterProcessor;
-    // filterProcessor
+    void updateFrequency();
+    void updateResonance();
+    void updateFilterCoefficients();
 
-    // Declare the saturation processor object
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> lowPassCutoffSmoothed, highPassCutoffSmoothed, resonanceSmoothed;
+    juce::NormalisableRange<float> lowPassCutoffRange, highPassCutoffRange;
+    
+    // Todo set this up wiht a processor duplicator
     CustomWaveShaper saturationProcessor;
 
-    // Declare the ProcessSpec object
-    juce::dsp::ProcessSpec spec;
-
-  
-
-    
-
-    //==============================================================================
-
-
-    
-    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DRFilterAudioProcessor)
 };

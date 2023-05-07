@@ -10,12 +10,19 @@ DRFilterAudioProcessor::DRFilterAudioProcessor()
             .withInput("Input", juce::AudioChannelSet::stereo(), true)
             .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
       apvts(*this, nullptr, "Parameters", createParameterLayout()),
-      saturationProcessor(apvts)
+      saturationProcessor(apvts), 
+      lowPassCutoffRange(MIN_FREQ, MAX_FREQ, NORMALISED_INTERNAL, CUTOFF_SKEW_FACTOR),
+      highPassCutoffRange(MIN_FREQ, MAX_FREQ, NORMALISED_INTERNAL, CUTOFF_SKEW_FACTOR)
+
 {
     // Add parameter listeners    
     apvts.addParameterListener("Cutoff", this);
     apvts.addParameterListener("Resonance", this);
     apvts.addParameterListener("Drive", this);
+
+    // Set initial values for lowPassSmoothed, highPassSmoothed and resonanceSmoothed
+    updateFrequency();
+    updateResonance();
 }
 
 DRFilterAudioProcessor::~DRFilterAudioProcessor()
@@ -43,43 +50,75 @@ juce::AudioProcessorValueTreeState::ParameterLayout DRFilterAudioProcessor::crea
 
     // Add parameters to the layout
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("Cutoff", 1), "Cutoff", -100.0f, 100.0f, 1.0f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("Resonance", 1), "Resonance", 0.1f, 10.0f, 0.05f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("Resonance", 1), "Resonance", 0.0f, 10.0f, 0.05f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("Drive", 1), "Drive", 0.0f, 100.0f, 1.0f));
 
     return layout;
 }
 
+void DRFilterAudioProcessor::updateFrequency()
+{   
+    auto cutoff = apvts.getRawParameterValue("Cutoff")->load();
+    float lowPassCutoffNormalised = juce::jmap(abs(cutoff), FILTER_DEAD_ZONE, 100.0f, 0.0f, 1.0f);
+    float highPassCutoffNormalised = juce::jmap(cutoff, FILTER_DEAD_ZONE, 100.0f, 0.0f, 1.0f);
+    lowPassCutoffNormalised = juce::jlimit(0.0f, 1.0f, lowPassCutoffNormalised);
+    highPassCutoffNormalised = juce::jlimit(0.0f, 1.0f, highPassCutoffNormalised);
+    auto lowPassCutOff = lowPassCutoffRange.convertFrom0to1(lowPassCutoffNormalised);
+    auto highPassCutOff = highPassCutoffRange.convertFrom0to1(highPassCutoffNormalised);
+    lowPassCutoffSmoothed.setTargetValue(lowPassCutOff);
+    highPassCutoffSmoothed.setTargetValue(highPassCutOff);
+    // lowPassCutoffSmoothed.setTargetValue(lowPassCutoffRange.convertFrom0to1(lowPassCutoffNormalised));
+    // highPassCutoffSmoothed.setTargetValue(highPassCutoffRange.convertFrom0to1(highPassCutoffNormalised));
+}
+
+void DRFilterAudioProcessor::updateResonance()
+{
+    float resonance = apvts.getRawParameterValue("Resonance")->load();
+    resonance = juce::jmap(resonance, 0.0f, 10.0f, FILTER_Q_MIN, FILTER_Q_MAX);
+    resonanceSmoothed.setTargetValue(resonance);
+}
+
 void DRFilterAudioProcessor::parameterChanged(const juce::String& parameterID, float newValue)
 {
-    if (parameterID == "Cutoff" || parameterID == "Resonance")
+    if (parameterID == "Cutoff")
     {
-        updateFilterCoefficients();
+        // Set the target value for smoothedCutoff
+        updateFrequency();
     }
+    else if (parameterID == "Resonance")
+    {
+        // Set the target value for smoothedResonance
+        updateResonance();
+    }
+
+    updateFilterCoefficients();
 }
 
 // // IIR FILTER
 void DRFilterAudioProcessor::updateFilterCoefficients() { 
+    
+    // Get the smoothed and skewed values
     auto cutoff = apvts.getRawParameterValue("Cutoff")->load();
-    auto resonance = apvts.getRawParameterValue("Resonance")->load();
+    auto lowPassCutoff = lowPassCutoffSmoothed.getNextValue();
+    auto highPassCutoff = highPassCutoffSmoothed.getNextValue();
+    float Q = resonanceSmoothed.getNextValue();
     auto sampleRate = getSampleRate();
-    float Q = juce::jmap(resonance, 0.0f, 10.0f, FILTER_Q_MIN, FILTER_Q_MAX);
-
+    
     if (cutoff < -FILTER_DEAD_ZONE)
     {
-        float lowPassCutoff = juce::jmap(cutoff, -100.0f, -FILTER_DEAD_ZONE, 20.0f, 20000.0f);
         *filterProcessor.state = *juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate, lowPassCutoff, Q);
         filterProcessor.reset();
     }
     else if (cutoff > FILTER_DEAD_ZONE)
     {
-        float highPassCutoff = juce::jmap(cutoff, FILTER_DEAD_ZONE, 100.0f, 20.0f, 7000.0f);
         *filterProcessor.state = *juce::dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, highPassCutoff, Q);
         filterProcessor.reset();
 
     }
     else
     {
-        *filterProcessor.state = *juce::dsp::IIR::Coefficients<float>::makeAllPass(sampleRate, 22000.0f);
+        // If the knob is in the middle set the filter to be an all pass, with the phase shift set to be as high as possible
+        *filterProcessor.state = *juce::dsp::IIR::Coefficients<float>::makeAllPass(sampleRate, MAX_FREQ);
         filterProcessor.reset();
     }
 }
@@ -100,6 +139,12 @@ void DRFilterAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBloc
     filterProcessor.prepare(spec);
     filterProcessor.reset();
 
+
+    // Set the smoothing time for smoothedCutoff and smoothedResonance
+    lowPassCutoffSmoothed.reset(sampleRate, SMOOTHING_TIME_SECONDS);
+    highPassCutoffSmoothed.reset(sampleRate, SMOOTHING_TIME_SECONDS);
+    resonanceSmoothed.reset(sampleRate, SMOOTHING_TIME_SECONDS);
+    
     // Prepare waveshaper
     // saturationProcessor.prepare(spec);
     // saturationProcessor.reset();
@@ -124,6 +169,13 @@ void DRFilterAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     // Apply filter
     juce::dsp::AudioBlock<float> block(buffer);
     filterProcessor.process(juce::dsp::ProcessContextReplacing<float>(block));
+
+    // Check if smoothed parameters are at their target values
+    // if (lowPassCutoffSmoothed.isSmoothing() || highPassCutoffSmoothed.isSmoothing() || resonanceSmoothed.isSmoothing())
+    // {
+        // juce::Logger::writeToLog("Smoothing");
+        // updateFilterCoefficients();
+    // }
 }
 
 
@@ -140,23 +192,12 @@ void DRFilterAudioProcessor::releaseResources()
 
 void DRFilterAudioProcessor::getStateInformation(juce::MemoryBlock& memoryBlock)
 {
-//    auto state = apvts->copyState();
-//    std::unique_ptr<juce::XmlElement> xml(state.createXml());
-//    memoryBlock.append(xml->toString().toRawUTF8(), xml->toString().getNumBytesAsUTF8() + 1);
+
 }
 
 void DRFilterAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
-//    std::unique_ptr<juce::XmlElement> xmlState(juce::XmlDocument::parse(juce::String::createStringFromData(static_cast<const char*>(data), sizeInBytes)));
-//
-//    if (xmlState.get() != nullptr)
-//    {
-//        if (xmlState->hasTagName(apvts->state.getType()))
-//        {
-//            juce::ValueTree tree = juce::ValueTree::fromXml(*xmlState);
-//            apvts->replaceState(tree);
-//        }
-//    }
+
 }
 
 const juce::String DRFilterAudioProcessor::getName() const
