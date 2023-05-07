@@ -68,7 +68,9 @@ void DRFilterAudioProcessor::updateFilterCoefficients() {
     {
         float lowPassCutoff = juce::jmap(cutoff, -100.0f, -FILTER_DEAD_ZONE, 20.0f, 20000.0f);
         auto lowPassCoefficients = juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate, lowPassCutoff, Q);
+        
         filterProcessor.coefficients = lowPassCoefficients;
+        filterProcessor.reset();
     }
     else if (cutoff > FILTER_DEAD_ZONE)
     {
@@ -98,7 +100,9 @@ void DRFilterAudioProcessor::updateFilterCoefficients() {
         // // float skewedCutoff = std::pow(cutoff, skewFactor);
         // // float highPassCutoff = juce::jmap(outputValue, FILTER_DEAD_ZONE, 100.0f, 20.0f, 7000.0f);
         // auto highPassCoefficients = juce::dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, highPassCutoff, Q);
+        
         filterProcessor.coefficients = highPassCoefficients;
+        filterProcessor.reset();
     }
     else
     {
