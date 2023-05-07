@@ -76,8 +76,10 @@ private:
     //==============================================================================
     
     // Declare the state variable filter for stereo audio processing
-    juce::dsp::StateVariableTPTFilter<float> stateVariableTPTFilter;
-    juce::dsp::IIR::Filter<float> filterProcessor;
+    // juce::dsp::StateVariableTPTFilter<float> stateVariableTPTFilter;
+    // juce::dsp::IIR::Filter<float> filterProcessor;
+    
+    juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> filterProcessor;
     // filterProcessor
 
     // Declare the saturation processor object
