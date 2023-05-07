@@ -12,8 +12,6 @@ DRFilterAudioProcessor::DRFilterAudioProcessor()
       apvts(*this, nullptr, "Parameters", createParameterLayout()),
       saturationProcessor(apvts)
 {
-    
-    
     // Add parameter listeners    
     apvts.addParameterListener("Cutoff", this);
     apvts.addParameterListener("Resonance", this);
@@ -64,7 +62,7 @@ void DRFilterAudioProcessor::updateFilterCoefficients() {
     auto cutoff = apvts.getRawParameterValue("Cutoff")->load();
     auto resonance = apvts.getRawParameterValue("Resonance")->load();
     auto sampleRate = getSampleRate();
-    float Q = juce::jmap(resonance, 0.0f, 10.0f, 0.707f, 1.3f);
+    float Q = juce::jmap(resonance, 0.0f, 10.0f, FILTER_Q_MIN, FILTER_Q_MAX);
 
     if (cutoff < -FILTER_DEAD_ZONE)
     {
@@ -81,7 +79,7 @@ void DRFilterAudioProcessor::updateFilterCoefficients() {
     }
     else
     {
-        *filterProcessor.state = *juce::dsp::IIR::Coefficients<float>::makeAllPass(sampleRate, 1000.0f);
+        *filterProcessor.state = *juce::dsp::IIR::Coefficients<float>::makeAllPass(sampleRate, 22000.0f);
         filterProcessor.reset();
     }
 }
@@ -97,15 +95,10 @@ void DRFilterAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBloc
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = getTotalNumOutputChannels();
 
-    // Prepare filter
-    auto frequency = 400.0f; 
-    auto resonance = 1.0f;
-    
+    // Prepare filter    
     updateFilterCoefficients();
     filterProcessor.prepare(spec);
     filterProcessor.reset();
-    
-    
 
     // Prepare waveshaper
     // saturationProcessor.prepare(spec);
@@ -128,36 +121,9 @@ void DRFilterAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
         buffer.clear (i, 0, buffer.getNumSamples());
 
 
+    // Apply filter
     juce::dsp::AudioBlock<float> block(buffer);
     filterProcessor.process(juce::dsp::ProcessContextReplacing<float>(block));
-    // // Process each channel
-    // for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    // {
-    //     // Create a separate buffer for each channel
-    //     juce::AudioBuffer<float> channelBuffer(1, buffer.getNumSamples());
-    //     channelBuffer.copyFrom(0, 0, buffer.getReadPointer(channel), buffer.getNumSamples());
-
-    //     // Create an audio block from the channel buffer
-    //     juce::dsp::AudioBlock<float> singleChannelBlock(channelBuffer);
-
-    //     // Process the channel
-    //     juce::dsp::ProcessContextReplacing<float> context(singleChannelBlock);
-    //     filterProcessor.process(juce::dsp::ProcessContextReplacing<float>());
-
-    // //     // IIR FILTER
-    // //     // If not in the deadzone, process the filter
-    // //     if (cutoff > FILTER_DEAD_ZONE || cutoff < -FILTER_DEAD_ZONE)
-    // //     {
-    // //         // Process the filter
-            
-    // //     }
-
-    // //     // Process the waveshaper
-    // //     saturationProcessor.process(context);
-
-    // //     // Copy the processed data back into the original buffer
-    // //     buffer.copyFrom(channel, 0, channelBuffer.getReadPointer(0), channelBuffer.getNumSamples());
-    // }
 }
 
 
