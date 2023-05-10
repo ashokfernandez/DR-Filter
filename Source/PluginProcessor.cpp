@@ -11,8 +11,32 @@ DRFilterAudioProcessor::DRFilterAudioProcessor()
             .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
       apvts(*this, nullptr, "Parameters", createParameterLayout()),
       saturationProcessor(apvts), 
-      lowPassCutoffRange(MIN_FREQ, MAX_FREQ, NORMALISED_INTERNAL, CUTOFF_SKEW_FACTOR),
-      highPassCutoffRange(MIN_FREQ, MAX_FREQ, NORMALISED_INTERNAL, CUTOFF_SKEW_FACTOR)
+    //   lowPassCutoffRange(MIN_FREQ, MAX_FREQ, NORMALISED_INTERNAL, LOWPASS_CUTOFF_SKEW_FACTOR),
+    //   highPassCutoffRange(MIN_FREQ, MAX_FREQ, NORMALISED_INTERNAL, HIGHPASS_CUTOFF_SKEW_FACTOR)
+    lowPassCutoffRange(
+            5.0f, 100.0f,
+            [](float start, float end, float normalizedValue) {
+                return start + (end - start) * normalizedValue;
+            },
+            [](float start, float end, float mappedValue) {
+                return (mappedValue - start) / (end - start);
+            },
+            [](float start, float end, float mappedValue) {
+                float k = std::log10(20000.0f / 20.0f) / std::log10(100.0f / 5.0f);
+                return 20.0f * std::pow((mappedValue / 5.0f), k);
+            }),
+          highPassCutoffRange(
+            5.0f, 100.0f,
+            [](float start, float end, float normalizedValue) {
+                return start + (end - start) * normalizedValue;
+            },
+            [](float start, float end, float mappedValue) {
+                return (mappedValue - start) / (end - start);
+            },
+            [](float start, float end, float mappedValue) {
+                float k = std::log(6000.0f / 20.0f) / std::log(50.0f / 5.0f);
+                return 20.0f * std::pow((mappedValue / 5.0f), k);
+            })
 
 {
     // Add parameter listeners    
@@ -59,14 +83,38 @@ juce::AudioProcessorValueTreeState::ParameterLayout DRFilterAudioProcessor::crea
 void DRFilterAudioProcessor::updateFrequency()
 {   
     auto cutoff = apvts.getRawParameterValue("Cutoff")->load();
-    float lowPassCutoffNormalised = juce::jmap(abs(cutoff), FILTER_DEAD_ZONE, 100.0f, 0.0f, 1.0f);
-    float highPassCutoffNormalised = juce::jmap(cutoff, FILTER_DEAD_ZONE, 100.0f, 0.0f, 1.0f);
-    lowPassCutoffNormalised = juce::jlimit(0.0f, 1.0f, lowPassCutoffNormalised);
-    highPassCutoffNormalised = juce::jlimit(0.0f, 1.0f, highPassCutoffNormalised);
-    auto lowPassCutOff = lowPassCutoffRange.convertFrom0to1(lowPassCutoffNormalised);
-    auto highPassCutOff = highPassCutoffRange.convertFrom0to1(highPassCutoffNormalised);
-    lowPassCutoffSmoothed.setTargetValue(lowPassCutOff);
-    highPassCutoffSmoothed.setTargetValue(highPassCutOff);
+    auto cutoffAmount = abs(cutoff);
+
+    if (cutoff > FILTER_DEAD_ZONE || cutoff < -FILTER_DEAD_ZONE)
+    {
+        float lowPassCutoff = juce::jmap(cutoffAmount, FILTER_DEAD_ZONE, 100.0f, MAX_FREQ, MIN_FREQ);
+        float highPassCutoff = juce::jmap(cutoffAmount, FILTER_DEAD_ZONE, 100.0f, MIN_FREQ, MAX_FREQ);
+
+        // float lowPassCutoffNormalised = juce::jmap(cutoffAmount, FILTER_DEAD_ZONE, 100.0f, 1.0f, 0.0f);
+        // float highPassCutoffNormalised = juce::jmap(cutoffAmount, FILTER_DEAD_ZONE, 100.0f, 0.0f, 1.0f);
+        
+        // lowPassCutoffNormalised = juce::jlimit(0.0f, 1.0f, lowPassCutoffNormalised);
+        // highPassCutoffNormalised = juce::jlimit(0.0f, 1.0f, highPassCutoffNormalised);
+
+        // auto lowPassCutoffNormalised = lowPassCutoffRange.convertTo0to1(cutoffAmount);
+
+        // auto lowPassCutoff = lowPassCutoffRange.convertFrom0to1(cutoffAmount);
+        // auto highPassCutoff = highPassCutoffRange.convertFrom0to1(cutoffAmount);
+
+        lowPassCutoffSmoothed.setTargetValue(lowPassCutoff);
+        highPassCutoffSmoothed.setTargetValue(highPassCutoff);
+        // DBG ("lowPassCutoff: " + juce::String(lowPassCutoff) + " highPassCutoff: " + juce::String(highPassCutoff));
+    }
+    
+
+    // float lowPassCutoff = juce::jmap(cutoffAmount, FILTER_DEAD_ZONE, 100.0f, 20000.0f, 20.0f);
+    // float highPassCutoff = juce::jmap(cutoffAmount, FILTER_DEAD_ZONE, 100.0f, 20.0f, 20000.0f);
+    
+    // auto lowPassCutOff = lowPassCutoffRange.convertFrom0to1(lowPassCutoffNormalised);
+    // auto highPassCutOff = highPassCutoffRange.convertFrom0to1(highPassCutoffNormalised);
+    
+    // lowPassCutoffSmoothed.setTargetValue(lowPassCutoff);
+    // highPassCutoffSmoothed.setTargetValue(highPassCutoff);
     // lowPassCutoffSmoothed.setTargetValue(lowPassCutoffRange.convertFrom0to1(lowPassCutoffNormalised));
     // highPassCutoffSmoothed.setTargetValue(highPassCutoffRange.convertFrom0to1(highPassCutoffNormalised));
 }
@@ -91,7 +139,7 @@ void DRFilterAudioProcessor::parameterChanged(const juce::String& parameterID, f
         updateResonance();
     }
 
-    updateFilterCoefficients();
+    // updateFilterCoefficients();
 }
 
 // // IIR FILTER
@@ -171,11 +219,11 @@ void DRFilterAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     filterProcessor.process(juce::dsp::ProcessContextReplacing<float>(block));
 
     // Check if smoothed parameters are at their target values
-    // if (lowPassCutoffSmoothed.isSmoothing() || highPassCutoffSmoothed.isSmoothing() || resonanceSmoothed.isSmoothing())
-    // {
+    if (lowPassCutoffSmoothed.isSmoothing() || highPassCutoffSmoothed.isSmoothing() || resonanceSmoothed.isSmoothing())
+    {
         // juce::Logger::writeToLog("Smoothing");
-        // updateFilterCoefficients();
-    // }
+        updateFilterCoefficients();
+    }
 }
 
 

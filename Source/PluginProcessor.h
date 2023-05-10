@@ -19,15 +19,17 @@
 #define FILTER_Q_MAX 5.0f
 
 // Skew factor for non-linear mapping of parameters 
-#define CUTOFF_SKEW_FACTOR 0.99f
+#define HIGHPASS_CUTOFF_SKEW_FACTOR 0.5f
+#define LOWPASS_CUTOFF_SKEW_FACTOR 1.5f
+
 
 // Max and min hearing frequencies
 #define MAX_FREQ 20000.0f
 #define MIN_FREQ 20.0f
 
 // Time factor used to smooth parameter changes
-#define SMOOTHING_TIME_SECONDS 0.05f
-#define NORMALISED_INTERNAL 0.1f
+#define SMOOTHING_TIME_SECONDS 0.5f
+// #define NORMALISED_INTERNAL 0.1f
 
 //==============================================================================
 /**
