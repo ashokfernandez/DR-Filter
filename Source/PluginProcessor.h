@@ -22,6 +22,12 @@
 #define HIGHPASS_CUTOFF_SKEW_FACTOR 0.5f
 #define LOWPASS_CUTOFF_SKEW_FACTOR 1.5f
 
+// Min and max frequencies for filter range
+#define LOWPASS_CUTOFF_MIN 20.0f
+#define LOWPASS_CUTOFF_MAX 9500.0f
+#define HIGHPASS_CUTOFF_MIN 20.0f
+#define HIGHPASS_CUTOFF_MAX 5000.0f
+
 
 // Max and min hearing frequencies
 #define MAX_FREQ 20000.0f

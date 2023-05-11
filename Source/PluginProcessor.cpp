@@ -81,8 +81,8 @@ void DRFilterAudioProcessor::parameterChanged(const juce::String& parameterID, f
     if (parameterID == "Cutoff")
     {
         // Set the target value for smoothedCutoff and determine the filter type changed
-        updateFrequency();
         updateFilterType();
+        updateFrequency();
     }
     else if (parameterID == "Resonance")
     {
@@ -115,9 +115,25 @@ void DRFilterAudioProcessor::updateFrequency()
 {   
     auto cutoff = apvts.getRawParameterValue("Cutoff")->load();
     auto cutoffAmount = abs(cutoff);
-    float lowPassCutoff = juce::jmap(cutoffAmount, 0.0f, 100.0f, MIN_FREQ, MAX_FREQ);
 
-    filterProcessor.setCutoffFrequency(lowPassCutoff);
+    if (currentFilterType == FilterType::HighPass)
+    {
+        auto highPassCutoff = juce::jmap(cutoffAmount, FILTER_DEAD_ZONE, 100.0f, HIGHPASS_CUTOFF_MIN, HIGHPASS_CUTOFF_MAX);
+        filterProcessor.setCutoffFrequency(highPassCutoff);
+    }
+    else if (currentFilterType == FilterType::LowPass)
+    {
+        auto lowPassCutoff = juce::jmap(cutoffAmount, FILTER_DEAD_ZONE, 100.0f, LOWPASS_CUTOFF_MAX, LOWPASS_CUTOFF_MIN);
+        filterProcessor.setCutoffFrequency(lowPassCutoff);
+    }
+    // else
+    // {
+    //     auto lowPassCutoff = juce::jmap(cutoffAmount, 0.0f, 100.0f, FILTER_FREQ_MIN, FILTER_FREQ_MAX);
+    //     filterProcessor.setLowPassFrequency(lowPassCutoff);
+    //     auto highPassCutoff = juce::jmap(cutoffAmount, 0.0f, 100.0f, FILTER_FREQ_MIN, FILTER_FREQ_MAX);
+    //     filterProcessor.setHighPassFrequency(highPassCutoff);
+    // }
+    
 }
 
 void DRFilterAudioProcessor::updateResonance()
