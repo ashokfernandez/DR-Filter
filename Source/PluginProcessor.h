@@ -16,7 +16,7 @@
 
 // Minimum and maximum Q values for the filter, starting at 0.707 (butterworth) up to spikey
 #define FILTER_Q_MIN 0.707f
-#define FILTER_Q_MAX 5.0f
+#define FILTER_Q_MAX 8.0f
 
 // Skew factor for non-linear mapping of parameters 
 #define HIGHPASS_CUTOFF_SKEW_FACTOR 0.5f
@@ -90,13 +90,33 @@ private:
 
     // Signal chain objects
     juce::dsp::ProcessSpec spec;
-    juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> filterProcessor;
+    
+    // juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> filterProcessor;
+    
+    // juce::dsp::ProcessorDuplicator<juce::dsp::StateVariableTPTFilter<float>, juce::dsp::StateVariableFilter::Parameters<float>> filterProcessor;
+    juce::dsp::StateVariableTPTFilter<float> filterProcessor;
+    
+    // juce::dsp::ProcessorDuplicator<juce::dsp::LadderFilter<float>, juce::dsp::LadderFilter<float>::Parameters> filterProcessor;
+    // juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> lowPassFilterProcessor, highPassFilterProcessor;
+    // juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> filterProcessor;
+
+    
     void updateFrequency();
     void updateResonance();
-    void updateFilterCoefficients();
+    void updateFilterType();
+    // void updateFilter();
 
-    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> lowPassCutoffSmoothed, highPassCutoffSmoothed, resonanceSmoothed;
-    juce::NormalisableRange<float> lowPassCutoffRange, highPassCutoffRange;
+//    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> lowPassCutoffSmoothed, highPassCutoffSmoothed, resonanceSmoothed;
+//    juce::NormalisableRange<float> lowPassCutoffRange, highPassCutoffRange;
+
+    enum FilterType
+    {
+        LowPass,
+        HighPass, 
+        Disabled
+    };
+
+    FilterType currentFilterType = FilterType::Disabled;
     
     // Todo set this up wiht a processor duplicator
     CustomWaveShaper saturationProcessor;
