@@ -16,7 +16,20 @@
 
 // Minimum and maximum Q values for the filter, starting at 0.707 (butterworth) up to spikey
 #define FILTER_Q_MIN 0.707f
-#define FILTER_Q_MAX 5.0f
+#define FILTER_Q_MAX 8.0f
+
+// Skew factor for non-linear mapping of parameters 
+#define HIGHPASS_CUTOFF_SKEW_FACTOR 0.5f
+#define LOWPASS_CUTOFF_SKEW_FACTOR 1.5f
+
+
+// Max and min hearing frequencies
+#define MAX_FREQ 20000.0f
+#define MIN_FREQ 20.0f
+
+// Time factor used to smooth parameter changes
+#define SMOOTHING_TIME_SECONDS 0.5f
+// #define NORMALISED_INTERNAL 0.1f
 
 //==============================================================================
 /**
@@ -72,34 +85,41 @@ public:
     
 
 private:
-    
-    void updateFilterCoefficients();
-
+    // Parameter setup
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
-    //==============================================================================
+    // Signal chain objects
+    juce::dsp::ProcessSpec spec;
     
-    // Declare the state variable filter for stereo audio processing
-    // juce::dsp::StateVariableTPTFilter<float> stateVariableTPTFilter;
-    // juce::dsp::IIR::Filter<float> filterProcessor;
+    // juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> filterProcessor;
     
-    juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> filterProcessor;
-    // filterProcessor
+    // juce::dsp::ProcessorDuplicator<juce::dsp::StateVariableTPTFilter<float>, juce::dsp::StateVariableFilter::Parameters<float>> filterProcessor;
+    juce::dsp::StateVariableTPTFilter<float> filterProcessor;
+    
+    // juce::dsp::ProcessorDuplicator<juce::dsp::LadderFilter<float>, juce::dsp::LadderFilter<float>::Parameters> filterProcessor;
+    // juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> lowPassFilterProcessor, highPassFilterProcessor;
+    // juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> filterProcessor;
 
-    // Declare the saturation processor object
+    
+    void updateFrequency();
+    void updateResonance();
+    void updateFilterType();
+    // void updateFilter();
+
+//    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> lowPassCutoffSmoothed, highPassCutoffSmoothed, resonanceSmoothed;
+//    juce::NormalisableRange<float> lowPassCutoffRange, highPassCutoffRange;
+
+    enum FilterType
+    {
+        LowPass,
+        HighPass, 
+        Disabled
+    };
+
+    FilterType currentFilterType = FilterType::Disabled;
+    
+    // Todo set this up wiht a processor duplicator
     CustomWaveShaper saturationProcessor;
 
-    // Declare the ProcessSpec object
-    juce::dsp::ProcessSpec spec;
-
-  
-
-    
-
-    //==============================================================================
-
-
-    
-    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DRFilterAudioProcessor)
 };
