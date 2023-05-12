@@ -17,19 +17,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Setup MSBuild.exe
-      if: matrix.os == 'windows-latest'
-      uses: microsoft/setup-msbuild@v1.0.2
-
-    - name: Cache JUCE
-      id: cache-juce
-      uses: actions/cache@v3
-      with:
-        path: JUCE
-        key: ${{ runner.os }}-juce-7.0.5
-
     - name: Download JUCE
-      if: steps.cache-juce.outputs.cache-hit != 'true'
+      if: steps.check-juce-cache.outputs.cache-hit != 'true'
       shell: bash
       run: |
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
@@ -40,16 +29,27 @@ jobs:
           unzip juce-7.0.5-windows.zip
         fi
       
+    - name: Cache JUCE
+      id: check-juce-cache
+      uses: actions/cache@v3
+      with:
+        path: JUCE
+        key: ${{ runner.os }}-juce-7.0.5
+
     - name: Clone FRUT
       run: |
         git clone https://github.com/McMartin/FRUT.git
+
+    - name: Cache FRUT directory
+      id: cache-frut
+      uses: actions/cache@v3
+      with:
+        path: FRUT/build
+        key: ${{ runner.os }}-frut-${{ hashFiles('FRUT/build') }}
+      if: steps.cache-frut.outputs.cache-hit != 'true'
         
-    - name: Print directory structure
-      run: |
-        pwd
-        ls -R
-      
     - name: Generate CMakeLists.txt
+      if: steps.cache-frut.outputs.cache-hit != 'true'
       shell: bash
       run: |
         cd FRUT
@@ -64,12 +64,12 @@ jobs:
         
         # Convert the Jucer project to CMakeLists.txt
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
-          ./prefix/FRUT/bin/Jucer2CMake reprojucer "../MyGreatProject/MyGreatProject.jucer" "../prefix/FRUT/cmake/Reprojucer.cmake"
+          ./FRUT/prefix/FRUT/bin/Jucer2CMake reprojucer "./DR Filter.jucer" "./FRUT/prefix/FRUT/cmake/Reprojucer.cmake"
         else
-          ./prefix/FRUT/bin/Jucer2CMake reprojucer "..\\MyGreatProject\\MyGreatProject.jucer" "..\\prefix\\FRUT\\cmake\\Reprojucer.cmake"
+          ./FRUT/prefix/FRUT/bin/Jucer2CMake reprojucer ".\\DR Filter.jucer" ".\\FRUT\\prefix\\FRUT\\cmake\\Reprojucer.cmake"
         fi
 
-        cd MyGreatProject/build
+        cd build
         
         # Build the project using CMake
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
