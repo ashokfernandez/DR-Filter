@@ -30,13 +30,14 @@ jobs:
 
     - name: Download JUCE
       if: steps.cache-juce.outputs.cache-hit != 'true'
+      shell: bash
       run: |
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
           curl -LO https://github.com/juce-framework/JUCE/releases/download/7.0.5/juce-7.0.5-osx.zip
           unzip juce-7.0.5-osx.zip
         else
           curl -LO https://github.com/juce-framework/JUCE/releases/download/7.0.5/juce-7.0.5-windows.zip
-          Expand-Archive -Path juce-7.0.5-windows.zip -DestinationPath .\
+          unzip juce-7.0.5-windows.zip
         fi
 
     - name: Build
