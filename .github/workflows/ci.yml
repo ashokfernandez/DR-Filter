@@ -21,9 +21,9 @@ jobs:
 
     - name: Setup MSBuild.exe
       if: matrix.os == 'windows-latest'
-      uses: microsoft/setup-msbuild@v1.0.2
+      uses: microsoft/setup-msbuild@v1.1
       with:
-        vs-version: 16.7
+        vs-version: 17.x
     
     - name: Cache JUCE
       id: check-juce-cache
@@ -97,7 +97,7 @@ jobs:
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
           cmake -B ./Builds -G Xcode
         else
-          cmake -B ./Builds -G "Visual Studio 16 2019" -A x64
+          cmake -B ./Builds -G "Visual Studio 17 2022" -A x64
         fi
 
         echo "Compile binaries"
