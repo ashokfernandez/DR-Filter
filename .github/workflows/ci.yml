@@ -56,13 +56,17 @@ jobs:
         mkdir build && cd build
         cmake .. -DCMAKE_INSTALL_PREFIX="../prefix" -DJUCE_ROOT="../../JUCE"
         cmake --build . --target install
+        pwd
+        ls
       
     - name: Build
       shell: bash
       run: |
         pwd
+        ls
         cd ..
         pwd
+        ls
         # Convert the Jucer project to CMakeLists.txt
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
           ./FRUT/prefix/FRUT/bin/Jucer2CMake reprojucer "./DR Filter.jucer" "./FRUT/prefix/FRUT/cmake/Reprojucer.cmake"
