@@ -40,19 +40,10 @@ jobs:
           unzip juce-7.0.5-windows.zip
         fi
       
-    - name: Download FRUT
-      shell: bash
+    - name: Clone FRUT
       run: |
-        if [ "${{ matrix.os }}" == "macos-latest" ]; then
-          curl -LO https://github.com/McMartin/FRUT/archive/refs/heads/main.zip
-          unzip main.zip
-          mv FRUT-main FRUT
-        else
-          curl -LO https://github.com/McMartin/FRUT/archive/refs/heads/main.zip
-          tar -xf main.zip
-          mv FRUT-main FRUT
-        fi
-
+        git clone https://github.com/McMartin/FRUT.git
+        
     - name: Print directory structure
       run: |
         pwd
