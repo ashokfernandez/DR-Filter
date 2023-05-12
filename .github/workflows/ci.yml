@@ -20,7 +20,7 @@ jobs:
       continue-on-error: true
 
     - name: Setup MSBuild
-      uses: actions/setup-msbuild@v1.1
+      uses: microsoft/setup-msbuild@v1.1
       with:
         vs-version: '2019'
 
