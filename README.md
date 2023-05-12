@@ -47,7 +47,7 @@ To use DR Filter in Logic Pro X, follow these steps:
 2. Click on the "Mixer" button in the top right corner of the screen to show the mixer.
 3. Click on the "Inserts" button on the audio track and select "DR Filter (AU)" or "DR Filter (VST)" depending on the version
 
-## Building Code
+## Building The Code
 DR Filter is an audio plugin written in C++ using JUCE v7.0.5.
 
 To use DR Filter, you need to download and install JUCE. You can set up Xcode on macOS or [Visual Studio](https://visualstudio.microsoft.com/) on Windows to compile JUCE by following the instructions in the JUCE documentation. Once you have JUCE installed, build the plugin using your preferred build system or IDE, and add it to your preferred Digital Audio Workstation (DAW) or standalone audio application.
