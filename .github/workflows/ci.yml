@@ -52,7 +52,7 @@ jobs:
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
           echo "Running Projucer..."
           ./JUCE/Projucer.app/Contents/MacOS/Projucer --help
-          ./JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path osx defaultJuceModulePath "${GITHUB_WORKSPACE}/JUCE/modules" --resave "DR Filter.jucer" || echo "Projucer command failed"
+          xvfb-run -a bash -c './JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path osx defaultJuceModulePath "${GITHUB_WORKSPACE}/JUCE/modules" --resave "DR Filter.jucer"'' || echo "Projucer command failed"
       
           if [ ! -d "DR Filter/Builds/MacOSX" ]; then
             echo "Build directory not found! Here is the current directory structure:"
