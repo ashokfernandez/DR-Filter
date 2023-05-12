@@ -19,6 +19,11 @@ jobs:
       uses: actions/checkout@v3
       continue-on-error: true
 
+    - name: Setup MSBuild
+      uses: actions/setup-msbuild@v1.1
+      with:
+        vs-version: '2019'
+
     - name: Cache JUCE
       id: check-juce-cache
       uses: actions/cache@v3
@@ -38,11 +43,6 @@ jobs:
           curl -LO https://github.com/juce-framework/JUCE/releases/download/7.0.5/juce-7.0.5-windows.zip
           unzip juce-7.0.5-windows.zip
         fi
-        
-        echo "Downloaded JUCE"
-        pwd
-        ls
-
       continue-on-error: true
       
     - name: Cache FRUT directory
@@ -57,10 +57,6 @@ jobs:
       if: steps.cache-frut.outputs.cache-hit != 'true'
       run: |
         git clone https://github.com/McMartin/FRUT.git
-
-        echo "Downloaded FRUT"
-        pwd
-        ls
       continue-on-error: true
 
     - name: Build FRUT
@@ -79,8 +75,6 @@ jobs:
         
         echo "Moving to DR Filter"
         cd ../..
-        pwd
-        ls
       continue-on-error: true
 
     - name: Generate CMakeLists.txt
@@ -88,8 +82,6 @@ jobs:
       shell: bash
       run: |
         echo "Generate CMakeLists.txt"
-        pwd
-        ls
         ./FRUT/compiled/FRUT/bin/Jucer2CMake reprojucer "DR Filter.jucer" ./FRUT/compiled/FRUT/cmake/Reprojucer.cmake --juce-modules=JUCE/modules
 
       continue-on-error: true
@@ -97,17 +89,17 @@ jobs:
     - name: Build DR Filter
       shell: bash
       run: |
-        echo "Build DR Filter"
-        pwd
-        ls
+        echo "Creating Builds folder"
         mkdir Builds
         
+        echo "Generate CMake for target platform"
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
           cmake -B ./Builds -G Xcode
         else
           cmake -B ./Builds -G "Visual Studio 16 2019" -A x64
         fi
 
+        echo "Compile binaries"
         cmake --build Builds --parallel --config Release
       continue-on-error: true
 
