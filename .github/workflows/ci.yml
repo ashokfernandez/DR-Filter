@@ -107,4 +107,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: DR-Filter-Windows
-        path: ./Builds/Release/DR\ Filter.vst3
+        path: ./Builds/Release/VST3/DR\ Filter.vst3
