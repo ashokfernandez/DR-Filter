@@ -60,8 +60,9 @@ jobs:
     - name: Build
       shell: bash
       run: |
+        pwd
         cd ..
-        
+        pwd
         # Convert the Jucer project to CMakeLists.txt
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
           ./FRUT/prefix/FRUT/bin/Jucer2CMake reprojucer "./DR Filter.jucer" "./FRUT/prefix/FRUT/cmake/Reprojucer.cmake"
