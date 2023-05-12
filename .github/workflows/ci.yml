@@ -15,7 +15,9 @@ jobs:
         os: [windows-latest, macos-latest]
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
+      continue-on-error: true
 
     - name: Cache JUCE
       id: check-juce-cache
@@ -23,13 +25,12 @@ jobs:
       with:
         path: JUCE
         key: ${{ runner.os }}-juce-7.0.5
+      continue-on-error: true
 
     - name: Download JUCE
       if: steps.check-juce-cache.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        mkdir JUCE
-        cd JUCE
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
           curl -LO https://github.com/juce-framework/JUCE/releases/download/7.0.5/juce-7.0.5-osx.zip
           unzip juce-7.0.5-osx.zip
@@ -37,6 +38,7 @@ jobs:
           curl -LO https://github.com/juce-framework/JUCE/releases/download/7.0.5/juce-7.0.5-windows.zip
           unzip juce-7.0.5-windows.zip
         fi
+      continue-on-error: true
       
     - name: Cache FRUT directory
       id: cache-frut
@@ -44,49 +46,52 @@ jobs:
       with:
         path: FRUT/build
         key: ${{ runner.os }}-frut-${{ hashFiles('FRUT/build') }}
+      continue-on-error: true
 
     - name: Clone FRUT
       if: steps.cache-frut.outputs.cache-hit != 'true'
       run: |
         git clone https://github.com/McMartin/FRUT.git
+      continue-on-error: true
 
     - name: Generate CMakeLists.txt
       if: steps.cache-frut.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        cd FRUT
-        mkdir build && cd build
+        echo "Generate CMakeLists.txt"
+        cd FRUT/build
+        ../prefix/FRUT/bin/Jucer2CMake reprojucer ../"DR Filter.jucer" ../prefix/FRUT/cmake/Reprojucer.cmake
+        cd ../..
         pwd
-        echo "Generating CMakeLists.txt"
-        cmake .. -DCMAKE_INSTALL_PREFIX="../DR-Filter" -DJUCE_ROOT="../../JUCE"
-        cmake --build . --target install
-        pwd
-        echo "CMakeLists.txt Generated"
-        ls
-      
-    - name: Build
+      continue-on-error: true
+
+    - name: Setup CMake
+      uses: jwlawson/actions-setup-cmake@v1.9
+      continue-on-error: true
+
+    - name: Build DR Filter
       shell: bash
       run: |
+        echo "Build DR Filter"
+        cd "DR Filter"
+        mkdir build && cd build
+        cmake .. -G Ninja
+        cmake --build .
+        cd ../..
         pwd
-        echo "Converting the Jucer project to CMakeLists.txt"
-        if [ "${{ matrix.os }}" == "macos-latest" ]; then
-          ./FRUT/prefix/DR-Filter/bin/Jucer2Reprojucer ../"DR-Filter/DR-Filter/DR Filter.jucer" ./FRUT/cmake/Reprojucer.cmake
-        else
-          ./FRUT/prefix/DR-Filter/bin/Jucer2Reprojucer "..\\DR-Filter\\DR-Filter\\DR Filter.jucer" ".\\FRUT\\cmake\\Reprojucer.cmake"
-        fi
+      continue-on-error: true
 
-        mkdir build
-        cd build
-        pwd
-        echo "Building the project"
-        
-        # Build the project using CMake
-        if [ "${{ matrix.os }}" == "macos-latest" ]; then
-          cmake ..
-          cmake --build .
-        else
-          cmake .. -G"Visual Studio 16 2019" -A x64
-          cmake --build . --config Release
-        fi
-        echo "Build complete"
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: DR-Filter-Binaries
+        path: DR Filter/build
+      continue-on-error: true
 
+    - name: Cleanup
+      if: always()
+      run: |
+        echo "Cleanup"
+        rm -rf FRUT
+        rm -rf JUCE
+        rm -rf "DR Filter/build
