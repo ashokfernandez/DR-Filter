@@ -54,7 +54,7 @@ jobs:
       run: |
         cd FRUT
         mkdir build && cd build
-        cmake .. -DCMAKE_INSTALL_PREFIX="../prefix" -DJUCE_ROOT="../../JUCE"
+        cmake .. -DCMAKE_INSTALL_PREFIX="../DR-Filter" -DJUCE_ROOT="../../JUCE"
         cmake --build . --target install
         pwd
         ls
@@ -62,16 +62,16 @@ jobs:
     - name: Build
       shell: bash
       run: |
-        pwd
-        ls
-        cd ..
+        # pwd
+        # ls
+        # cd ..
         pwd
         ls
         # Convert the Jucer project to CMakeLists.txt
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
-          ./FRUT/prefix/FRUT/bin/Jucer2CMake reprojucer "./DR Filter.jucer" "./FRUT/prefix/FRUT/cmake/Reprojucer.cmake"
+          ./FRUT/bin/Jucer2CMake reprojucer "./DR Filter.jucer" "./FRUT/cmake/Reprojucer.cmake"
         else
-          ./FRUT/prefix/FRUT/bin/Jucer2CMake reprojucer ".\\DR Filter.jucer" ".\\FRUT\\prefix\\FRUT\\cmake\\Reprojucer.cmake"
+          ./FRUT/bin/Jucer2CMake reprojucer ".\\DR Filter.jucer" ".\\FRUT\\cmake\\Reprojucer.cmake"
         fi
 
         cd build
