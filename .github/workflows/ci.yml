@@ -57,6 +57,30 @@ jobs:
       if: steps.cache-frut.outputs.cache-hit != 'true'
       run: |
         git clone https://github.com/McMartin/FRUT.git
+
+        echo "Downloaded FRUT"
+        pwd
+        ls
+      continue-on-error: true
+
+    - name: Build FRUT
+      if: steps.cache-frut.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        echo "Creating build folder "
+        mkdir FRUT/build
+
+        echo "Moving to FRUT/build"
+        cd FRUT/build
+        
+        echo "Building Jucer2CMake"
+        cmake .. -DCMAKE_INSTALL_PREFIX="../compiled" -DJUCE_ROOT="../../JUCE"
+        cmake --build . --target install --parallel
+        
+        echo "Moving to DR Filter"
+        cd ../..
+        pwd
+        ls
       continue-on-error: true
 
     - name: Generate CMakeLists.txt
@@ -66,40 +90,44 @@ jobs:
         echo "Generate CMakeLists.txt"
         pwd
         ls
-        
-        echo "Moving to FRUT/build"
-        cd FRUT/build
-        ../prefix/FRUT/bin/Jucer2CMake reprojucer ../"DR Filter.jucer" ../prefix/FRUT/cmake/Reprojucer.cmake
-        
-        echo "Moving to DR Filter"
-        cd ../..
-        pwd
-        ls
+        ./FRUT/compiled/FRUT/bin/Jucer2CMake reprojucer "DR Filter.jucer" ./FRUT/compiled/FRUT/cmake/Reprojucer.cmake
+
       continue-on-error: true
 
     - name: Build DR Filter
       shell: bash
       run: |
         echo "Build DR Filter"
-        cd "DR Filter"
-        mkdir build && cd build
-        cmake .. -G Ninja
-        cmake --build .
-        cd ../..
         pwd
+        ls
+        mkdir Builds
+        # cd Builds
+        if [ "${{ matrix.os }}" == "macos-latest" ]; then
+          cmake -B ./Builds -G Xcode
+        else
+          cmake -B ./Builds -G "Visual Studio 16 2019" -A x64
+        fi
+
+        cmake --build Builds --parallel --config Release
       continue-on-error: true
 
-    - name: Upload Artifacts
+    - name: Upload MacOS Binaries
+    uses: actions/upload-artifact@v3
+    with:
+      name: DR-Filter-MacOS
+      path: |
+        if [ "${{ matrix.os }}" == "macos-latest" ]; then
+          ./Builds/Release/DR\ Filter.vst3
+          ./Builds/Release/DR\ Filter.component
+        fi
+    continue-on-error: true
+    
+    - name: Upload Windows Binaries
       uses: actions/upload-artifact@v3
       with:
-        name: DR-Filter-Binaries
-        path: DR Filter/build
+        name: DR-Filter-Windows
+        path: |
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
+            ./Builds/Release/DR\ Filter.vst3
+          fi
       continue-on-error: true
-
-    - name: Cleanup
-      if: always()
-      run: |
-        echo "Cleanup"
-        rm -rf FRUT
-        rm -rf JUCE
-        rm -rf "DR Filter/build
