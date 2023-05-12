@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'release-*'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Setup MSBuild.exe
+      if: matrix.os == 'windows-latest'
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Cache JUCE
+      id: cache-juce
+      uses: actions/cache@v2
+      with:
+        path: JUCE
+        key: ${{ runner.os }}-juce-7.0.5
+
+    - name: Download JUCE
+      if: steps.cache-juce.outputs.cache-hit != 'true'
+      run: |
+        if [ "${{ matrix.os }}" == "macos-latest" ]; then
+          curl -LO https://github.com/juce-framework/JUCE/releases/download/7.0.5/juce-7.0.5-osx.zip
+          unzip juce-7.0.5-osx.zip
+        else
+          curl -LO https://github.com/juce-framework/JUCE/releases/download/7.0.5/juce-7.0.5-windows.zip
+          Expand-Archive -Path juce-7.0.5-windows.zip -DestinationPath .\
+        fi
+
+    - name: Build
+      run: |
+        # Use Projucer to generate your project files
+        if [ "${{ matrix.os }}" == "macos-latest" ]; then
+          ./JUCE/Projucer.app/Contents/MacOS/Projucer --resave "DR Filter.jucer"
+          xcodebuild -project Builds/MacOSX/"DR Filter.xcodeproj" -configuration Release -target "DR Filter"
+        else
+          ./JUCE/Projucer.exe --resave "DR Filter.jucer"
+          msbuild Builds/VisualStudio2019/"DR Filter.vcxproj" /p:Configuration=Release /p:Platform=x64
+        fi
