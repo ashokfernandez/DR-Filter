@@ -1,4 +1,4 @@
-name: Build VST and AU Binaries for MacOS and Windows
+name: Build Binaries for Windows (VST3) and MacOS (VST3 and AU)
 
 on:
   push:
@@ -17,7 +17,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-      continue-on-error: true
 
     - name: Setup MSBuild.exe
       if: matrix.os == 'windows-latest'
@@ -31,7 +30,6 @@ jobs:
       with:
         path: JUCE
         key: ${{ runner.os }}-juce-7.0.5
-      continue-on-error: true
 
     - name: Download JUCE
       if: steps.check-juce-cache.outputs.cache-hit != 'true'
@@ -44,21 +42,18 @@ jobs:
           curl -LO https://github.com/juce-framework/JUCE/releases/download/7.0.5/juce-7.0.5-windows.zip
           unzip juce-7.0.5-windows.zip
         fi
-      continue-on-error: true
       
     - name: Cache FRUT directory
       id: cache-frut
       uses: actions/cache@v3
       with:
-        path: FRUT/build
-        key: ${{ runner.os }}-frut-${{ hashFiles('FRUT/build') }}
-      continue-on-error: true
+        path: FRUT
+        key: ${{ runner.os }}-frut
 
     - name: Clone FRUT
       if: steps.cache-frut.outputs.cache-hit != 'true'
       run: |
         git clone https://github.com/McMartin/FRUT.git
-      continue-on-error: true
 
     - name: Build FRUT
       if: steps.cache-frut.outputs.cache-hit != 'true'
@@ -76,7 +71,6 @@ jobs:
         
         echo "Moving to DR Filter"
         cd ../..
-      continue-on-error: true
 
     - name: Generate CMakeLists.txt
       if: steps.cache-frut.outputs.cache-hit != 'true'
@@ -84,8 +78,6 @@ jobs:
       run: |
         echo "Generate CMakeLists.txt"
         ./FRUT/compiled/FRUT/bin/Jucer2CMake reprojucer "DR Filter.jucer" ./FRUT/compiled/FRUT/cmake/Reprojucer.cmake --juce-modules=JUCE/modules
-
-      continue-on-error: true
 
     - name: Build DR Filter
       shell: bash
@@ -102,7 +94,6 @@ jobs:
 
         echo "Compile binaries"
         cmake --build Builds --parallel --config Release
-      continue-on-error: true
 
     - name: Upload MacOS Binaries
       uses: actions/upload-artifact@v3
@@ -111,11 +102,9 @@ jobs:
         path: |
           ./Builds/Release/DR\ Filter.vst3
           ./Builds/Release/DR\ Filter.component
-      continue-on-error: true
 
     - name: Upload Windows Binaries
       uses: actions/upload-artifact@v3
       with:
         name: DR-Filter-Windows
         path: ./Builds/Release/DR\ Filter.vst3
-      continue-on-error: true
