@@ -90,7 +90,7 @@ jobs:
         echo "Generate CMakeLists.txt"
         pwd
         ls
-        ./FRUT/compiled/FRUT/bin/Jucer2CMake reprojucer "DR Filter.jucer" ./FRUT/compiled/FRUT/cmake/Reprojucer.cmake
+        ./FRUT/compiled/FRUT/bin/Jucer2CMake reprojucer "DR Filter.jucer" ./FRUT/compiled/FRUT/cmake/Reprojucer.cmake --juce-modules=JUCE/modules
 
       continue-on-error: true
 
@@ -118,7 +118,7 @@ jobs:
         path: |
           ./Builds/Release/DR\ Filter.vst3
           ./Builds/Release/DR\ Filter.component
-        continue-on-error: true
+      continue-on-error: true
 
     - name: Upload Windows Binaries
       uses: actions/upload-artifact@v3
