@@ -21,7 +21,33 @@
 
 **\*Note: Currently, the plugin has only been tested with [Xcode](https://developer.apple.com/xcode/) on macOS. The builds for Windows are automated and haven't been hand tested**
 
-## Installation
+## Installation and Usage
+To use DR Filter, you can install it by copying the files to the correct location on your computer
+
+| OS        | Type   | Location*                                         |
+|-----------|--------|--------------------------------------------------|
+| **MacOS**     | VST 3  | User: `~/Library/Audio/Plug-Ins/VST3`            |
+|           |        | System: `Macintosh HD/Library/Audio/Plug-Ins/VST3`|
+|           | AU     | User: `~/Library/Audio/Plug-Ins/Components`      |
+|           |        | System: `Macintosh HD/Library/Audio/Plug-Ins/Components`|
+| **Windows**   | VST3   | `C:\Program Files\Common Files\VST3`                |
+
+**\*Note: System will install for all users of the computer, User will install for an individual user**
+
+### [Ableton](https://www.ableton.com/)
+To use DR Filter in Ableton, follow these steps:
+1. Open Ableton and create a new audio track.
+2. Click on the "Audio Effects" category on the left-hand side of the screen and select "DR Filter (AU)" or "DR Filter (VST)" depending on the version you installed.
+3. Drag DR Filter onto the track.
+4. Adjust the filter parameters by clicking and dragging the knob controls.
+
+### [Logic Pro X](https://www.apple.com/logic-pro/)
+To use DR Filter in Logic Pro X, follow these steps:
+1. Open Logic Pro X and create a new audio track.
+2. Click on the "Mixer" button in the top right corner of the screen to show the mixer.
+3. Click on the "Inserts" button on the audio track and select "DR Filter (AU)" or "DR Filter (VST)" depending on the version
+
+## Building Code
 DR Filter is an audio plugin written in C++ using JUCE v7.0.5.
 
 To use DR Filter, you need to download and install JUCE. You can set up Xcode on macOS or [Visual Studio](https://visualstudio.microsoft.com/) on Windows to compile JUCE by following the instructions in the JUCE documentation. Once you have JUCE installed, build the plugin using your preferred build system or IDE, and add it to your preferred Digital Audio Workstation (DAW) or standalone audio application.
@@ -64,23 +90,6 @@ This action will trigger the GitHub Actions to start the automated build process
 Upon successful completion of the build process, the produced binaries will be available as artifacts on the [GitHub Actions build page](https://github.com/ashokfernandez/DR-Filter/actions). From there, a new release can be created such that it appears on the [releases page](https://github.com/ashokfernandez/DR-Filter/releases). 
 
 **Note**: This operation requires push access to the repository.
-
-
-## Usage
-To use DR Filter, add it as an effect in your preferred Digital Audio Workstation (DAW) or standalone audio application. 
-
-### [Ableton](https://www.ableton.com/)
-To use DR Filter in Ableton, follow these steps:
-1. Open Ableton and create a new audio track.
-2. Click on the "Audio Effects" category on the left-hand side of the screen and select "DR Filter (AU)" or "DR Filter (VST)" depending on the version you installed.
-3. Drag DR Filter onto the track.
-4. Adjust the filter parameters by clicking and dragging the knob controls.
-
-### [Logic Pro X](https://www.apple.com/logic-pro/)
-To use DR Filter in Logic Pro X, follow these steps:
-1. Open Logic Pro X and create a new audio track.
-2. Click on the "Mixer" button in the top right corner of the screen to show the mixer.
-3. Click on the "Inserts" button on the audio track and select "DR Filter (AU)" or "DR Filter (VST)" depending on the version
 
 ## License
 
