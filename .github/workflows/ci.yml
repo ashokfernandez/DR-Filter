@@ -38,6 +38,11 @@ jobs:
           curl -LO https://github.com/juce-framework/JUCE/releases/download/7.0.5/juce-7.0.5-windows.zip
           unzip juce-7.0.5-windows.zip
         fi
+        
+        echo "Downloaded JUCE"
+        pwd
+        ls
+
       continue-on-error: true
       
     - name: Cache FRUT directory
@@ -59,14 +64,17 @@ jobs:
       shell: bash
       run: |
         echo "Generate CMakeLists.txt"
+        pwd
+        ls
+        
+        echo "Moving to FRUT/build"
         cd FRUT/build
         ../prefix/FRUT/bin/Jucer2CMake reprojucer ../"DR Filter.jucer" ../prefix/FRUT/cmake/Reprojucer.cmake
+        
+        echo "Moving to DR Filter"
         cd ../..
         pwd
-      continue-on-error: true
-
-    - name: Setup CMake
-      uses: jwlawson/actions-setup-cmake@v1.9
+        ls
       continue-on-error: true
 
     - name: Build DR Filter
