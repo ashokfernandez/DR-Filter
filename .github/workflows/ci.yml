@@ -104,8 +104,8 @@ jobs:
       with:
         name: DR-Filter-MacOS
         path: |
-          "Builds/Release/DR Filter.vst3"
-          "Builds/Release/DR Filter.component"
+          ./Builds/Release/DR\ Filter.vst3
+          ./Builds/Release/DR\ Filter.component
 
     - name: Upload Windows Binaries
       if: matrix.os == 'windows-latest'
