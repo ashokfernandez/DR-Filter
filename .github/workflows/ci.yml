@@ -19,12 +19,12 @@ jobs:
       uses: actions/checkout@v3
       continue-on-error: true
 
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.1
+    - name: Setup MSBuild.exe
+      if: matrix.os == 'windows-latest'
+      uses: microsoft/setup-msbuild@v1.0.2
       with:
-        vs-version: '2019'
-        msbuild-architecture: 'x64'
-
+        vs-version: 16.7
+    
     - name: Cache JUCE
       id: check-juce-cache
       uses: actions/cache@v3
