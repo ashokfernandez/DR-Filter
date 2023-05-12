@@ -15,7 +15,7 @@ jobs:
         os: [windows-latest, macos-latest]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       
     - name: Setup MSBuild.exe
       if: matrix.os == 'windows-latest'
@@ -23,7 +23,7 @@ jobs:
 
     - name: Cache JUCE
       id: cache-juce
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: JUCE
         key: ${{ runner.os }}-juce-7.0.5
