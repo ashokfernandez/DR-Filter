@@ -5,7 +5,7 @@
               bundleIdentifier="com.sideeffectsaudio.DRFilter" pluginDesc="A versatile filter and saturation plugin"
               pluginManufacturer="Side Effects" pluginManufacturerCode="Sdfx"
               pluginCode="Drfl" pluginVST3Category="Filter,Fx" pluginAAXCategory="8192"
-              companyWebsite="www.sideeffectsaudio.com" pluginFormats="buildAU,buildAUv3,buildStandalone,buildVST3">
+              companyWebsite="www.sideeffectsaudio.com" pluginFormats="buildAU,buildStandalone,buildVST3">
   <MAINGROUP id="EkPDKl" name="DR Filter">
     <GROUP id="{A558ECD0-2532-A68D-9E27-47566440E0AC}" name="Source">
       <FILE id="HbUuC8" name="CustomWaveshaper.cpp" compile="1" resource="0"
