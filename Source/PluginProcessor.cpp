@@ -9,10 +9,10 @@ DRFilterAudioProcessor::DRFilterAudioProcessor()
     : AudioProcessor(BusesProperties()
             .withInput("Input", juce::AudioChannelSet::stereo(), true)
             .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
-      apvts(*this, nullptr, "Parameters", createParameterLayout()),
-      saturationProcessor(apvts), 
-      lowPassCutoffRange(LOWPASS_CUTOFF_MIN, LOWPASS_CUTOFF_MAX), 
-      highPassCutoffRange(HIGHPASS_CUTOFF_MIN, HIGHPASS_CUTOFF_MAX) 
+        apvts(*this, nullptr, "Parameters", createParameterLayout()),
+        lowPassCutoffRange(LOWPASS_CUTOFF_MIN, LOWPASS_CUTOFF_MAX),
+        highPassCutoffRange(HIGHPASS_CUTOFF_MIN, HIGHPASS_CUTOFF_MAX),
+        saturationProcessor(apvts)
 
 {
     // Add parameter listeners    
@@ -136,8 +136,8 @@ void DRFilterAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBloc
     filterProcessor.prepare(spec);
     
     // Prepare waveshaper
-    // saturationProcessor.prepare(spec);
-    // saturationProcessor.reset();
+     saturationProcessor.prepare(spec);
+
 }
 
 void DRFilterAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -161,6 +161,7 @@ void DRFilterAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     if (currentFilterType != FilterType::Disabled)
     {
         filterProcessor.process(juce::dsp::ProcessContextReplacing<float>(block));
+        saturationProcessor.process(juce::dsp::ProcessContextReplacing<float>(block));
     }
 }
 
