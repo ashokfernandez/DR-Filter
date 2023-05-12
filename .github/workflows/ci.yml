@@ -51,25 +51,26 @@ jobs:
         # Use Projucer to generate your project files
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
           echo "Running Projucer..."
-          ./JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path osx defaultJuceModulePath "${GITHUB_WORKSPACE}/JUCE/modules" --resave "DR Filter.jucer"
-    
+          ./JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path osx defaultJuceModulePath "${GITHUB_WORKSPACE}/JUCE/modules" --resave "DR Filter.jucer" || echo "Projucer command failed"
+      
           if [ ! -d "DR Filter/Builds/MacOSX" ]; then
             echo "Build directory not found! Here is the current directory structure:"
             find . -name '*' | grep -v "^./JUCE"
             exit 1
           fi
-    
+      
           xcodebuild -project "DR Filter/Builds/MacOSX/DR Filter.xcodeproj" -configuration Release -target "DR Filter"
         else
           echo "Running Projucer..."
-          ./JUCE/Projucer.exe --set-global-search-path windows defaultJuceModulePath "${GITHUB_WORKSPACE}/JUCE/modules" --resave "DR Filter.jucer"
+          ./JUCE/Projucer.exe --set-global-search-path windows defaultJuceModulePath "${GITHUB_WORKSPACE}/JUCE/modules" --resave "DR Filter.jucer" || echo "Projucer command failed"
           
           if [ ! -d "DR Filter/Builds/VisualStudio2019" ]; then
             echo "Build directory not found! Here is the current directory structure:"
             find . -name '*' | grep -v "^./JUCE"
             exit 1
           fi
-    
+      
           msbuild "DR Filter/Builds/VisualStudio2019/DR Filter.vcxproj" /p:Configuration=Release /p:Platform=x64
         fi
+        
         
