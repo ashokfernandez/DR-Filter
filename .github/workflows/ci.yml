@@ -45,9 +45,9 @@ jobs:
       run: |
         # Use Projucer to generate your project files
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
-          ./JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path osx defaultJuceModulePath "${GITHUB_WORKSPACE}/JUCE/modules" --resave "DR Filter.jucer"
-          xcodebuild -project Builds/MacOSX/"DR Filter.xcodeproj" -configuration Release -target "DR Filter"
+          ./JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path macos defaultJuceModulePath "${GITHUB_WORKSPACE}/JUCE/modules" --resave "DR Filter.jucer"
+          xcodebuild -project "DR Filter/Builds/MacOSX/DR Filter.xcodeproj" -configuration Release -target "DR Filter"
         else
-          ./JUCE/Projucer.exe --set-global-search-path win defaultJuceModulePath "${GITHUB_WORKSPACE}/JUCE/modules" --resave "DR Filter.jucer"
-          msbuild Builds/VisualStudio2019/"DR Filter.vcxproj" /p:Configuration=Release /p:Platform=x64
+          ./JUCE/Projucer.exe --set-global-search-path windows defaultJuceModulePath "${GITHUB_WORKSPACE}/JUCE/modules" --resave "DR Filter.jucer"
+          msbuild "DR Filter/Builds/VisualStudio2019/DR Filter.vcxproj" /p:Configuration=Release /p:Platform=x64
         fi
