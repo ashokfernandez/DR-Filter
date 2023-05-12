@@ -15,9 +15,11 @@
 - Filter is completely removed from the signal when cutoff is in the middle
 - Resonance control to adjust the level of the peak of the filter
 - Drive control to add a warm analog sound to your audio
-- Available in AU and VST formats and is compatible with macOS and probably Windows\*
+- Available in AU and VST formats and is compatible with macOS and Windows\*
 
-**\*Note: Currently, the plugin has only been compiled in [Xcode](https://developer.apple.com/xcode/) on macOS. However, it should work with [JUCE](https://juce.com/) on other operating systems.**
+### [Download Latest Versions of VST3 / AU](https://github.com/ashokfernandez/DR-Filter/releases)
+
+**\*Note: Currently, the plugin has only been tested with [Xcode](https://developer.apple.com/xcode/) on macOS. The builds for Windows are automated and haven't been hand tested**
 
 ## Installation
 DR Filter is an audio plugin written in C++ using JUCE v7.0.5.
@@ -43,6 +45,26 @@ After installation, you're ready to use DR Filter in your DAW!
 5. Change the post compile settings in DR Filter.projucer to point to your new AudioPluginHost executable. 
 6. Compile, AudioPluginHost opens, play around with your build
 6. Quit AudioPluginHost, tweak code and recompile
+
+## Releasing New Versions
+
+To build a new release of the pluigin, execute the `release.sh` script. This script simplifies the version incrementation process and triggers the automated build process via GitHub Actions.
+
+```bash
+./release.sh
+```
+
+The script will prompt you to choose which version segment to increment (major, minor, or patch), and will then create and push a new git tag accordingly.
+
+This action will trigger the GitHub Actions to start the automated build process. Binaries will be built for the following platforms and formats:
+
+- Windows: VST3
+- MacOS: VST3, AU
+
+Upon successful completion of the build process, the produced binaries will be available as artifacts on the [GitHub Actions build page](https://github.com/ashokfernandez/DR-Filter/actions). From there, a new release can be created such that it appears on the [releases page](https://github.com/ashokfernandez/DR-Filter/releases). 
+
+**Note**: This operation requires push access to the repository.
+
 
 ## Usage
 To use DR Filter, add it as an effect in your preferred Digital Audio Workstation (DAW) or standalone audio application. 
