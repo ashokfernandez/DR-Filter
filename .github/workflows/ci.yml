@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-      
+
     - name: Setup MSBuild.exe
       if: matrix.os == 'windows-latest'
       uses: microsoft/setup-msbuild@v1.0.2
@@ -39,39 +39,52 @@ jobs:
           curl -LO https://github.com/juce-framework/JUCE/releases/download/7.0.5/juce-7.0.5-windows.zip
           unzip juce-7.0.5-windows.zip
         fi
+      
+    - name: Download FRUT
+      shell: bash
+      run: |
+        if [ "${{ matrix.os }}" == "macos-latest" ]; then
+          curl -LO https://github.com/McMartin/FRUT/archive/refs/heads/main.zip
+          unzip main.zip
+          mv FRUT-main FRUT
+        else
+          curl -LO https://github.com/McMartin/FRUT/archive/refs/heads/main.zip
+          tar -xf main.zip
+          mv FRUT-main FRUT
+        fi
 
     - name: Print directory structure
       run: |
         pwd
         ls -R
       
+    - name: Generate CMakeLists.txt
+      shell: bash
+      run: |
+        cd FRUT
+        mkdir build && cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX="../prefix" -DJUCE_ROOT="../../JUCE"
+        cmake --build . --target install
+      
     - name: Build
       shell: bash
       run: |
-        # Use Projucer to generate your project files
+        cd ..
+        
+        # Convert the Jucer project to CMakeLists.txt
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
-          echo "Running Projucer..."
-          ./JUCE/Projucer.app/Contents/MacOS/Projucer --help
-          xvfb-run -a bash -c './JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path osx defaultJuceModulePath "${GITHUB_WORKSPACE}/JUCE/modules" --resave "DR Filter.jucer"' || echo "Projucer command failed"
-      
-          if [ ! -d "DR Filter/Builds/MacOSX" ]; then
-            echo "Build directory not found! Here is the current directory structure:"
-            find . -name '*' | grep -v "^./JUCE"
-            exit 1
-          fi
-      
-          xcodebuild -project "DR Filter/Builds/MacOSX/DR Filter.xcodeproj" -configuration Release -target "DR Filter"
+          ./prefix/FRUT/bin/Jucer2CMake reprojucer "../MyGreatProject/MyGreatProject.jucer" "../prefix/FRUT/cmake/Reprojucer.cmake"
         else
-          echo "Running Projucer..."
-          ./JUCE/Projucer.exe --set-global-search-path windows defaultJuceModulePath "${GITHUB_WORKSPACE}/JUCE/modules" --resave "DR Filter.jucer" || echo "Projucer command failed"
-          
-          if [ ! -d "DR Filter/Builds/VisualStudio2019" ]; then
-            echo "Build directory not found! Here is the current directory structure:"
-            find . -name '*' | grep -v "^./JUCE"
-            exit 1
-          fi
-      
-          msbuild "DR Filter/Builds/VisualStudio2019/DR Filter.vcxproj" /p:Configuration=Release /p:Platform=x64
+          ./prefix/FRUT/bin/Jucer2CMake reprojucer "..\\MyGreatProject\\MyGreatProject.jucer" "..\\prefix\\FRUT\\cmake\\Reprojucer.cmake"
         fi
+
+        cd MyGreatProject/build
         
-        
+        # Build the project using CMake
+        if [ "${{ matrix.os }}" == "macos-latest" ]; then
+          cmake ..
+          cmake --build .
+        else
+          cmake .. -G"Visual Studio 16 2019" -A x64
+          cmake --build . --config Release
+        fi
