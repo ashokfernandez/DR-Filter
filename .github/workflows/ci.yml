@@ -51,6 +51,7 @@ jobs:
         # Use Projucer to generate your project files
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
           echo "Running Projucer..."
+          ./JUCE/Projucer.app/Contents/MacOS/Projucer --help
           ./JUCE/Projucer.app/Contents/MacOS/Projucer --set-global-search-path osx defaultJuceModulePath "${GITHUB_WORKSPACE}/JUCE/modules" --resave "DR Filter.jucer" || echo "Projucer command failed"
       
           if [ ! -d "DR Filter/Builds/MacOSX" ]; then
