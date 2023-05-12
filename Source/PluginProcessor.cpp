@@ -10,39 +10,19 @@ DRFilterAudioProcessor::DRFilterAudioProcessor()
             .withInput("Input", juce::AudioChannelSet::stereo(), true)
             .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
       apvts(*this, nullptr, "Parameters", createParameterLayout()),
-      saturationProcessor(apvts)
-    //   lowPassCutoffRange(MIN_FREQ, MAX_FREQ, NORMALISED_INTERNAL, LOWPASS_CUTOFF_SKEW_FACTOR),
-    //   highPassCutoffRange(MIN_FREQ, MAX_FREQ, NORMALISED_INTERNAL, HIGHPASS_CUTOFF_SKEW_FACTOR)
-    // lowPassCutoffRange(
-    //         5.0f, 100.0f,
-    //         [](float start, float end, float normalizedValue) {
-    //             return start + (end - start) * normalizedValue;
-    //         },
-    //         [](float start, float end, float mappedValue) {
-    //             return (mappedValue - start) / (end - start);
-    //         },
-    //         [](float start, float end, float mappedValue) {
-    //             float k = std::log10(20000.0f / 20.0f) / std::log10(100.0f / 5.0f);
-    //             return 20.0f * std::pow((mappedValue / 5.0f), k);
-    //         }),
-    //       highPassCutoffRange(
-    //         5.0f, 100.0f,
-    //         [](float start, float end, float normalizedValue) {
-    //             return start + (end - start) * normalizedValue;
-    //         },
-    //         [](float start, float end, float mappedValue) {
-    //             return (mappedValue - start) / (end - start);
-    //         },
-    //         [](float start, float end, float mappedValue) {
-    //             float k = std::log(6000.0f / 20.0f) / std::log(50.0f / 5.0f);
-    //             return 20.0f * std::pow((mappedValue / 5.0f), k);
-    //         })
+      saturationProcessor(apvts), 
+      lowPassCutoffRange(LOWPASS_CUTOFF_MIN, LOWPASS_CUTOFF_MAX), 
+      highPassCutoffRange(HIGHPASS_CUTOFF_MIN, HIGHPASS_CUTOFF_MAX) 
 
 {
     // Add parameter listeners    
     apvts.addParameterListener("Cutoff", this);
     apvts.addParameterListener("Resonance", this);
     apvts.addParameterListener("Drive", this);
+
+    // Set skew factors for normalised control ranges
+    highPassCutoffRange.setSkewForCentre(HIGHPASS_CUTOFF_SKEW_MIDPOINT);
+    lowPassCutoffRange.setSkewForCentre(LOWPASS_CUTOFF_SKEW_MIDPOINT);
 }
 
 DRFilterAudioProcessor::~DRFilterAudioProcessor()
@@ -70,7 +50,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout DRFilterAudioProcessor::crea
 
     // Add parameters to the layout
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("Cutoff", 1), "Cutoff", -100.0f, 100.0f, 1.0f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("Resonance", 1), "Resonance", 0.0f, 10.0f, 0.05f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("Resonance", 1), "Resonance", 0.0f, 10.0f, 1.5f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("Drive", 1), "Drive", 0.0f, 100.0f, 1.0f));
 
     return layout;
@@ -118,22 +98,16 @@ void DRFilterAudioProcessor::updateFrequency()
 
     if (currentFilterType == FilterType::HighPass)
     {
-        auto highPassCutoff = juce::jmap(cutoffAmount, FILTER_DEAD_ZONE, 100.0f, HIGHPASS_CUTOFF_MIN, HIGHPASS_CUTOFF_MAX);
+        auto highPassCutoff = juce::jmap(cutoffAmount, FILTER_DEAD_ZONE, 100.0f, 0.0f, 1.0f);
+        highPassCutoff = highPassCutoffRange.convertFrom0to1(highPassCutoff);
         filterProcessor.setCutoffFrequency(highPassCutoff);
     }
     else if (currentFilterType == FilterType::LowPass)
     {
-        auto lowPassCutoff = juce::jmap(cutoffAmount, FILTER_DEAD_ZONE, 100.0f, LOWPASS_CUTOFF_MAX, LOWPASS_CUTOFF_MIN);
+        auto lowPassCutoff = juce::jmap(cutoffAmount, FILTER_DEAD_ZONE, 100.0f, 1.0f, 0.0f);
+        lowPassCutoff = lowPassCutoffRange.convertFrom0to1(lowPassCutoff);
         filterProcessor.setCutoffFrequency(lowPassCutoff);
     }
-    // else
-    // {
-    //     auto lowPassCutoff = juce::jmap(cutoffAmount, 0.0f, 100.0f, FILTER_FREQ_MIN, FILTER_FREQ_MAX);
-    //     filterProcessor.setLowPassFrequency(lowPassCutoff);
-    //     auto highPassCutoff = juce::jmap(cutoffAmount, 0.0f, 100.0f, FILTER_FREQ_MIN, FILTER_FREQ_MAX);
-    //     filterProcessor.setHighPassFrequency(highPassCutoff);
-    // }
-    
 }
 
 void DRFilterAudioProcessor::updateResonance()
@@ -143,28 +117,6 @@ void DRFilterAudioProcessor::updateResonance()
     // resonanceSmoothed.setTargetValue(resonance);
     filterProcessor.setResonance(resonance);
 }
-
-// // IIR FILTER
-// void DRFilterAudioProcessor::updateFilter() { 
-    
-//     // Get the smoothed and skewed values
-//     auto cutoff = apvts.getRawParameterValue("Cutoff")->load();
-    
-//     filterProcessor.setType(juce::dsp::StateVariableTPTFilterType::highpass);
-
-//     if (cutoff > FILTER_DEAD_ZONE)
-//     {
-//         filterProcessor.setType(juce::dsp::StateVariableTPTFilterType::highpass);
-//     }
-//     else if (cutoff < -FILTER_DEAD_ZONE)
-//     {
-//         filterProcessor.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
-//     }
-//     else
-//     {
-//         filterProcessor.setType(juce::dsp::StateVariableTPTFilterType::bandpass);
-//     }
-// }
 
 
 //==============================================================================
@@ -182,13 +134,6 @@ void DRFilterAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBloc
     updateFrequency();
     updateResonance();
     filterProcessor.prepare(spec);
-    // filterProcessor.reset();
-
-
-    // Set the smoothing time for smoothedCutoff and smoothedResonance
-    // lowPassCutoffSmoothed.reset(sampleRate, SMOOTHING_TIME_SECONDS);
-    // highPassCutoffSmoothed.reset(sampleRate, SMOOTHING_TIME_SECONDS);
-    // resonanceSmoothed.reset(sampleRate, SMOOTHING_TIME_SECONDS);
     
     // Prepare waveshaper
     // saturationProcessor.prepare(spec);
@@ -217,15 +162,6 @@ void DRFilterAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     {
         filterProcessor.process(juce::dsp::ProcessContextReplacing<float>(block));
     }
-
-    // filterProcessor.process(juce::dsp::ProcessContextReplacing<float>(block));
-
-    // Check if smoothed parameters are at their target values
-    // if (lowPassCutoffSmoothed.isSmoothing() || highPassCutoffSmoothed.isSmoothing() || resonanceSmoothed.isSmoothing())
-    // {
-        // juce::Logger::writeToLog("Smoothing");
-        // updateFilter();
-    // }
 }
 
 
