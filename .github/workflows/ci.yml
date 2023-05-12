@@ -101,7 +101,7 @@ jobs:
         pwd
         ls
         mkdir Builds
-        # cd Builds
+        
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
           cmake -B ./Builds -G Xcode
         else
@@ -112,22 +112,17 @@ jobs:
       continue-on-error: true
 
     - name: Upload MacOS Binaries
-    uses: actions/upload-artifact@v3
-    with:
-      name: DR-Filter-MacOS
-      path: |
-        if [ "${{ matrix.os }}" == "macos-latest" ]; then
+      uses: actions/upload-artifact@v3
+      with:
+        name: DR-Filter-MacOS
+        path: |
           ./Builds/Release/DR\ Filter.vst3
           ./Builds/Release/DR\ Filter.component
-        fi
-    continue-on-error: true
-    
+        continue-on-error: true
+
     - name: Upload Windows Binaries
       uses: actions/upload-artifact@v3
       with:
         name: DR-Filter-Windows
-        path: |
-          if [ "${{ matrix.os }}" == "windows-latest" ]; then
-            ./Builds/Release/DR\ Filter.vst3
-          fi
+        path: ./Builds/Release/DR\ Filter.vst3
       continue-on-error: true
