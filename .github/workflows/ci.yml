@@ -54,27 +54,29 @@ jobs:
       run: |
         cd FRUT
         mkdir build && cd build
+        pwd
+        echo "Generating CMakeLists.txt"
         cmake .. -DCMAKE_INSTALL_PREFIX="../DR-Filter" -DJUCE_ROOT="../../JUCE"
         cmake --build . --target install
         pwd
+        echo "CMakeLists.txt Generated"
         ls
       
     - name: Build
       shell: bash
       run: |
-        # pwd
-        # ls
-        # cd ..
-        # pwd
-        # ls
-        # Convert the Jucer project to CMakeLists.txt
+        pwd
+        echo "Converting the Jucer project to CMakeLists.txt"
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
-          ./DR-Filter/DR-Filter/FRUT/build/Jucer2CMake reprojucer "./DR-Filter/DR-Filter/DR Filter.jucer" "./DR-Filter/DR-Filter/FRUT/cmake/Reprojucer.cmake"
+          ./FRUT/prefix/DR-Filter/bin/Jucer2Reprojucer ../"DR-Filter/DR-Filter/DR Filter.jucer" ./FRUT/cmake/Reprojucer.cmake
         else
-          ./DR-Filter/DR-Filter/FRUT/build/Jucer2CMake reprojucer ".\\DR-Filter\\DR-Filter\\DR Filter.jucer" ".\\DR-Filter\\DR-Filter\\FRUT\\cmake\\Reprojucer.cmake"
+          ./FRUT/prefix/DR-Filter/bin/Jucer2Reprojucer "..\\DR-Filter\\DR-Filter\\DR Filter.jucer" ".\\FRUT\\cmake\\Reprojucer.cmake"
         fi
 
+        mkdir build
         cd build
+        pwd
+        echo "Building the project"
         
         # Build the project using CMake
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
@@ -84,3 +86,4 @@ jobs:
           cmake .. -G"Visual Studio 16 2019" -A x64
           cmake --build . --config Release
         fi
+        echo "Build complete"
