@@ -65,13 +65,13 @@ jobs:
         # pwd
         # ls
         # cd ..
-        pwd
-        ls
+        # pwd
+        # ls
         # Convert the Jucer project to CMakeLists.txt
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
-          ./FRUT/bin/Jucer2CMake reprojucer "./DR Filter.jucer" "./FRUT/cmake/Reprojucer.cmake"
+          ./DR-Filter/DR-Filter/FRUT/build/Jucer2CMake reprojucer "./DR-Filter/DR-Filter/DR Filter.jucer" "./DR-Filter/DR-Filter/FRUT/cmake/Reprojucer.cmake"
         else
-          ./FRUT/bin/Jucer2CMake reprojucer ".\\DR Filter.jucer" ".\\FRUT\\cmake\\Reprojucer.cmake"
+          ./DR-Filter/DR-Filter/FRUT/build/Jucer2CMake reprojucer ".\\DR-Filter\\DR-Filter\\DR Filter.jucer" ".\\DR-Filter\\DR-Filter\\FRUT\\cmake\\Reprojucer.cmake"
         fi
 
         cd build
