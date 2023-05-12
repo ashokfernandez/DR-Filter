@@ -99,6 +99,7 @@ jobs:
       run: ls -R "Builds/"
 
     - name: Upload MacOS Binaries
+      if: matrix.os == 'macos-latest'
       uses: actions/upload-artifact@v3
       with:
         name: DR-Filter-MacOS
@@ -107,6 +108,7 @@ jobs:
           "Builds/Release/DR Filter.component"
 
     - name: Upload Windows Binaries
+      if: matrix.os == 'windows-latest'
       uses: actions/upload-artifact@v3
       with:
         name: DR-Filter-Windows
