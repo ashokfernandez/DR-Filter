@@ -40,6 +40,11 @@ jobs:
           unzip juce-7.0.5-windows.zip
         fi
 
+    - name: Print directory structure
+      run: |
+        pwd
+        ls -R
+      
     - name: Build
       shell: bash
       run: |
