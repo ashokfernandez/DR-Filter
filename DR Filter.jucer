@@ -8,10 +8,6 @@
               companyWebsite="www.sideeffectsaudio.com" pluginFormats="buildAU,buildStandalone,buildVST3">
   <MAINGROUP id="EkPDKl" name="DR Filter">
     <GROUP id="{A558ECD0-2532-A68D-9E27-47566440E0AC}" name="Source">
-      <FILE id="HbUuC8" name="CustomWaveshaper.cpp" compile="1" resource="0"
-            file="Source/CustomWaveshaper.cpp"/>
-      <FILE id="isfykE" name="CustomWaveshaper.h" compile="0" resource="0"
-            file="Source/CustomWaveshaper.h"/>
       <FILE id="pf4eZg" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="A3Smgp" name="PluginProcessor.h" compile="0" resource="0"
@@ -23,6 +19,8 @@
             file="Source/SpectrogramComponent.cpp"/>
       <FILE id="q0VtOa" name="SpectrogramComponent.h" compile="0" resource="0"
             file="Source/SpectrogramComponent.h"/>
+      <FILE id="qZT3NX" name="Distortion.cpp" compile="1" resource="0" file="Source/Distortion.cpp"/>
+      <FILE id="U8Xnec" name="Distortion.h" compile="0" resource="0" file="Source/Distortion.h"/>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>

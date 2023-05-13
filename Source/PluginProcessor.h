@@ -9,7 +9,8 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "CustomWaveShaper.h"
+// #include "CustomWaveShaper.h"
+#include "Distortion.h"
 
 // Max and min hearing frequencies
 #define MAX_FREQ 20000.0f
@@ -85,6 +86,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     void parameterChanged(const juce::String& parameterID, float newValue) override;
+    void reset() noexcept;
 
     juce::AudioProcessorValueTreeState apvts;
 
@@ -104,6 +106,7 @@ private:
     void updateFrequency();
     void updateResonance();
     void updateFilterType();
+    void updateDrive();
 
     // Track the current filter type so we know when to disable the filter during processing
     enum FilterType
@@ -116,7 +119,9 @@ private:
     FilterType currentFilterType = FilterType::Disabled;
     
     // Todo set this up wiht a processor duplicator
-    CustomWaveShaper saturationProcessor;
+    // CustomWaveShaper saturationProcessor;
+    // juce::dsp::WaveShaper<float> saturationProcessor; 
+    Distortion distortionProcessor;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DRFilterAudioProcessor)
 };

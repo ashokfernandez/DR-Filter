@@ -11,8 +11,9 @@ DRFilterAudioProcessor::DRFilterAudioProcessor()
             .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
         apvts(*this, nullptr, "Parameters", createParameterLayout()),
         lowPassCutoffRange(LOWPASS_CUTOFF_MIN, LOWPASS_CUTOFF_MAX),
-        highPassCutoffRange(HIGHPASS_CUTOFF_MIN, HIGHPASS_CUTOFF_MAX),
-        saturationProcessor(apvts)
+        highPassCutoffRange(HIGHPASS_CUTOFF_MIN, HIGHPASS_CUTOFF_MAX)
+        // ,
+        // saturationProcessor(apvts)
 
 {
     // Add parameter listeners    
@@ -39,6 +40,15 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
     return new DRFilterAudioProcessor();
 }
 
+// Called by the DAW when the plugin should reset and flush and processing pipelines
+void DRFilterAudioProcessor::reset() noexcept
+{
+    // Reset the filter
+    filterProcessor.reset();
+
+    // Reset the saturation processor
+    distortionProcessor.reset();
+}
 
 //==============================================================================
 // PARAMETERS
@@ -51,7 +61,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout DRFilterAudioProcessor::crea
     // Add parameters to the layout
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("Cutoff", 1), "Cutoff", -100.0f, 100.0f, 1.0f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("Resonance", 1), "Resonance", 0.0f, 10.0f, 1.5f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("Drive", 1), "Drive", 0.0f, 100.0f, 1.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("Drive", 1), "Drive", 0.0f, 100.0f, 0.0f));
 
     return layout;
 }
@@ -60,14 +70,19 @@ void DRFilterAudioProcessor::parameterChanged(const juce::String& parameterID, f
 {
     if (parameterID == "Cutoff")
     {
-        // Set the target value for smoothedCutoff and determine the filter type changed
+        // Update filter type and frequency when cutoff is moved
         updateFilterType();
         updateFrequency();
     }
     else if (parameterID == "Resonance")
     {
-        // Set the target value for smoothedResonance
+        // Set the resonance value
         updateResonance();
+    }
+    else if (parameterID == "Drive")
+    {
+        // Update the gain for the distorion processor
+        updateDrive();
     }
 }
 
@@ -118,6 +133,12 @@ void DRFilterAudioProcessor::updateResonance()
     filterProcessor.setResonance(resonance);
 }
 
+void DRFilterAudioProcessor::updateDrive()
+{
+    float drive = apvts.getRawParameterValue("Drive")->load();
+    drive = juce::jmap(drive, 0.0f, 100.0f, 1.0f, 5.0f);
+    distortionProcessor.setDrive(drive);
+}
 
 //==============================================================================
 // AUDIO PROCESSING
@@ -136,8 +157,8 @@ void DRFilterAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBloc
     filterProcessor.prepare(spec);
     
     // Prepare waveshaper
-     saturationProcessor.prepare(spec);
-
+    updateDrive();
+    distortionProcessor.prepare(spec);
 }
 
 void DRFilterAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -161,7 +182,7 @@ void DRFilterAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     if (currentFilterType != FilterType::Disabled)
     {
         filterProcessor.process(juce::dsp::ProcessContextReplacing<float>(block));
-        saturationProcessor.process(juce::dsp::ProcessContextReplacing<float>(block));
+        distortionProcessor.process(juce::dsp::ProcessContextReplacing<float>(block));
     }
 }
 
