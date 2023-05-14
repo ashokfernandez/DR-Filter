@@ -26,14 +26,13 @@ void FlatUIColouredKnob::drawRotarySlider(juce::Graphics& g, int x, int y, int w
     const float radius = juce::jmin(width / 2.0f, height / 2.0f);
     const float centerX = x + width * 0.5f;
     const float centerY = y + height * 0.5f;
-    const float markerLength = radius * 0.45f;  // 45% of the radius
+    const float markerLength = radius * 0.70f;
     const float markerStartDistance = radius;
+    const float lineThickness = 5.0f;
 
-    // Define start and end angles in radians (-135 degrees to 135 degrees)
     const float rotaryStartAngleInRad = juce::degreesToRadians(-225.0f);
     const float rotaryEndAngleInRad = juce::degreesToRadians(45.0f);
 
-    // Map sliderPos (0 to 1) to rotaryStartAngle to rotaryEndAngle (-135 to 135 degrees in radians)
     const float rotation = juce::jmap(sliderPos, 0.0f, 1.0f, rotaryStartAngleInRad, rotaryEndAngleInRad);
 
     // Knob Background
@@ -48,6 +47,27 @@ void FlatUIColouredKnob::drawRotarySlider(juce::Graphics& g, int x, int y, int w
                                centerY + markerStartDistance * std::sin(rotation));
     knobMarker.lineTo(centerX + (markerStartDistance - markerLength) * std::cos(rotation),
                       centerY + (markerStartDistance - markerLength) * std::sin(rotation));
-    g.setColour(juce::Colours::red); // set your preferred color
-    g.strokePath(knobMarker, juce::PathStrokeType(2.0f)); // the width of the line is 2.0f
+    g.setColour(knobMarkerColour);
+    g.strokePath(knobMarker, juce::PathStrokeType(lineThickness));
+
+    // Start and End Range Markers
+    const float markerSize = lineThickness;  // Size of the square marker
+    const float markerRadius = radius + markerSize * 0.9f;  // The distance from the center to the marker
+    g.setColour(knobMarkerColour);
+
+    // Start marker
+    float startX = centerX + markerRadius * std::cos(rotaryStartAngleInRad) - markerSize / 2;
+    float startY = centerY + markerRadius * std::sin(rotaryStartAngleInRad) - markerSize / 2;
+    g.saveState();
+    g.addTransform(juce::AffineTransform::rotation(rotaryStartAngleInRad, startX + markerSize / 2, startY + markerSize / 2));
+    g.fillRect(startX, startY, markerSize, markerSize);
+    g.restoreState();
+
+    // End marker
+    float endX = centerX + markerRadius * std::cos(rotaryEndAngleInRad) - markerSize / 2;
+    float endY = centerY + markerRadius * std::sin(rotaryEndAngleInRad) - markerSize / 2;
+    g.saveState();
+    g.addTransform(juce::AffineTransform::rotation(rotaryEndAngleInRad, endX + markerSize / 2, endY + markerSize / 2));
+    g.fillRect(endX, endY, markerSize, markerSize);
+    g.restoreState();
 }
