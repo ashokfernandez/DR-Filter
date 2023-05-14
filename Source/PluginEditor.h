@@ -11,8 +11,8 @@
 #include <JuceHeader.h>
 
 #include "PluginProcessor.h"
-
 #include "SpectrogramComponent.h"
+#include "FlatUIColouredKnob.h"
 
 
 //==============================================================================
@@ -35,6 +35,11 @@ private:
     juce::Slider resonanceKnob;
     juce::Slider driveKnob;
     SpectrogramComponent spectrogram;
+
+    // FlatUIColouredKnob instances
+    FlatUIColouredKnob cutoffLookAndFeel;
+    FlatUIColouredKnob resonanceLookAndFeel;
+    FlatUIColouredKnob driveLookAndFeel;
 
     // Labels for the GUI components
     juce::Label cutoffLabel;

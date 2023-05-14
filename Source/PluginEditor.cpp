@@ -9,26 +9,32 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+
 //==============================================================================
 DRFilterAudioProcessorEditor::DRFilterAudioProcessorEditor(DRFilterAudioProcessor& p)
-    : AudioProcessorEditor(&p), audioProcessor(p)
-
+    : AudioProcessorEditor(&p), audioProcessor(p),
+      cutoffLookAndFeel(juce::Colours::green),    // initialize with your desired colours
+      resonanceLookAndFeel(juce::Colours::blue),
+      driveLookAndFeel(juce::Colours::red)
 {
 
     // Set up the knobs
     cutoffKnob.setSliderStyle(juce::Slider::Rotary);
     cutoffKnob.setRange(0.0, 1.0, 0.01);
     cutoffKnob.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
+    cutoffKnob.setLookAndFeel(&cutoffLookAndFeel);  // set the look and feel
     addAndMakeVisible(cutoffKnob);
 
     resonanceKnob.setSliderStyle(juce::Slider::Rotary);
     resonanceKnob.setRange(0.0, 1.0, 0.01);
     resonanceKnob.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
+    resonanceKnob.setLookAndFeel(&resonanceLookAndFeel);  // set the look and feel
     addAndMakeVisible(resonanceKnob);
 
     driveKnob.setSliderStyle(juce::Slider::Rotary);
     driveKnob.setRange(0.0, 1.0, 0.01);
     driveKnob.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
+    driveKnob.setLookAndFeel(&driveLookAndFeel);  // set the look and feel
     addAndMakeVisible(driveKnob);
 
     // Set up the labels
@@ -59,6 +65,9 @@ DRFilterAudioProcessorEditor::DRFilterAudioProcessorEditor(DRFilterAudioProcesso
 
 DRFilterAudioProcessorEditor::~DRFilterAudioProcessorEditor()
 {
+    cutoffKnob.setLookAndFeel(nullptr);     // clear the look and feel
+    resonanceKnob.setLookAndFeel(nullptr);  // clear the look and feel
+    driveKnob.setLookAndFeel(nullptr);      // clear the look and feel
 }
 
 //==============================================================================
