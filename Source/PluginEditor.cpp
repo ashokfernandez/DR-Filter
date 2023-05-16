@@ -50,8 +50,22 @@ DRFilterAudioProcessorEditor::DRFilterAudioProcessorEditor(DRFilterAudioProcesso
     driveLabel.attachToComponent(&driveKnob, false);
     driveLabel.setJustificationType(juce::Justification::centred);
 
-    // Add and make the spectrogram component visible
-    addAndMakeVisible(spectrogram);
+    // Side effects label
+     // Create a Typeface from the font data.
+    balooTypeface = juce::Typeface::createSystemTypefaceFor(BinaryData::Baloo2ExtraBold_ttf, BinaryData::Baloo2ExtraBold_ttfSize);
+
+    // Create a Font that uses this Typeface.
+    float fontSize = 30.0f; // Adjust the font size as needed
+    juce::Font balooFont = juce::Font(balooTypeface).withHeight(fontSize);
+
+    // Set the font of the Label.
+    sideEffectsLabel.setFont(balooFont);
+    
+    sideEffectsLabel.setText("side effects", juce::dontSendNotification);
+    // Don't forget to add the label to the editor and set its size and position
+    addAndMakeVisible(sideEffectsLabel);
+
+
 
     // Create the AudioProcessorValueTreeState::SliderAttachment objects
     cutoffAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "Cutoff", cutoffKnob);
@@ -60,7 +74,7 @@ DRFilterAudioProcessorEditor::DRFilterAudioProcessorEditor(DRFilterAudioProcesso
 
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize(400, 300);
+    setSize(400, 400);
 }
 
 DRFilterAudioProcessorEditor::~DRFilterAudioProcessorEditor()
@@ -71,15 +85,25 @@ DRFilterAudioProcessorEditor::~DRFilterAudioProcessorEditor()
 }
 
 //==============================================================================
-void DRFilterAudioProcessorEditor::paint (juce::Graphics& g)
+void DRFilterAudioProcessorEditor::paint(juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    // Create the gradient
+    juce::Colour startColour = juce::Colour::fromString("#FF535353");
+    juce::Colour endColour = juce::Colour::fromString("#FF302C28");
+    juce::ColourGradient gradient = juce::ColourGradient::vertical(startColour, 0, endColour, (float)getHeight());
 
-    // g.setColour (juce::Colours::white);
-    // g.setFont (15.0f);
-    // g.drawFittedText ("DRFilter", getLocalBounds(), juce::Justification::centred, 1);
+    // Create a FillType object and set its gradient
+    juce::FillType fillType;
+    fillType.setGradient(gradient);
+
+    // Set the fill type of the Graphics object
+    g.setFillType(fillType);
+
+    // Fill the component's bounds with the gradient
+    g.fillRect(getLocalBounds());
 }
+
+
 
 void DRFilterAudioProcessorEditor::resized()
 {
@@ -102,6 +126,8 @@ void DRFilterAudioProcessorEditor::resized()
     cutoffKnob.setBounds(margin, getHeight() / 2 - knobHeight / 2, knobWidth, knobHeight);
     resonanceKnob.setBounds(cutoffKnob.getX() + cutoffKnob.getWidth() + margin, getHeight() / 2 - knobHeight / 2, knobWidth, knobHeight);
     driveKnob.setBounds(resonanceKnob.getX() + resonanceKnob.getWidth() + margin, getHeight() / 2 - knobHeight / 2, knobWidth, knobHeight);
+
+     sideEffectsLabel.setBounds(getWidth() - 109, getHeight() - 31, 109, 31);
 
     // TODO: Set the position and size of the spectrogram component
 

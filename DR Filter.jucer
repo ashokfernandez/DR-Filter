@@ -7,6 +7,10 @@
               pluginCode="Drfl" pluginVST3Category="Filter,Fx" pluginAAXCategory="8192"
               companyWebsite="www.sideeffectsaudio.com" pluginFormats="buildAU,buildStandalone,buildVST3">
   <MAINGROUP id="EkPDKl" name="DR Filter">
+    <GROUP id="{A608E8BF-4DE7-B6C8-0F22-3D759EFC496A}" name="Assets">
+      <FILE id="sNrxDX" name="Baloo2-ExtraBold.ttf" compile="0" resource="1"
+            file="Assets/Baloo2-ExtraBold.ttf"/>
+    </GROUP>
     <GROUP id="{A558ECD0-2532-A68D-9E27-47566440E0AC}" name="Source">
       <FILE id="GaAHpk" name="FlatUIColouredKnob.cpp" compile="1" resource="0"
             file="Source/FlatUIColouredKnob.cpp"/>

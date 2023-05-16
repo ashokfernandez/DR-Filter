@@ -45,6 +45,11 @@ private:
     juce::Label cutoffLabel;
     juce::Label resonanceLabel;
     juce::Label driveLabel;
+    juce::Label sideEffectsLabel;
+
+    // Typeface and Font for custom font
+    juce::Typeface::Ptr balooTypeface;
+    juce::Font balooFont;
 
     // Attachment objects for linking the parameters to the GUI components
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> cutoffAttachment;
