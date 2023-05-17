@@ -12,6 +12,8 @@
             file="Assets/Baloo2-ExtraBold.ttf"/>
       <FILE id="aB7j7n" name="FlatKnobRotatable.svg" compile="0" resource="1"
             file="Assets/FlatKnobRotatable.svg"/>
+      <FILE id="FVZYNh" name="Righteous-Regular.ttf" compile="0" resource="1"
+            file="Assets/Righteous-Regular.ttf"/>
       <FILE id="zA9EaI" name="SmallKnobRotatable.svg" compile="0" resource="1"
             file="Assets/SmallKnobRotatable.svg"/>
       <FILE id="r5MbNR" name="SmallKnobStaticBG.svg" compile="0" resource="1"

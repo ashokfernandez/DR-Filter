@@ -50,20 +50,24 @@ DRFilterAudioProcessorEditor::DRFilterAudioProcessorEditor(DRFilterAudioProcesso
     driveLabel.attachToComponent(&driveKnob, false);
     driveLabel.setJustificationType(juce::Justification::centred);
 
+    // To import custom fonts they have to be included as binary data, then you import the type face 
+    // and create a font from it. Then you can set the font of the label to the custom font.
+
     // Side effects label
-     // Create a Typeface from the font data.
     balooTypeface = juce::Typeface::createSystemTypefaceFor(BinaryData::Baloo2ExtraBold_ttf, BinaryData::Baloo2ExtraBold_ttfSize);
-
-    // Create a Font that uses this Typeface.
-    float fontSize = 30.0f; // Adjust the font size as needed
+    float fontSize = 30.0f; 
     juce::Font balooFont = juce::Font(balooTypeface).withHeight(fontSize);
-
-    // Set the font of the Label.
     sideEffectsLabel.setFont(balooFont);
-    
     sideEffectsLabel.setText("side effects", juce::dontSendNotification);
-    // Don't forget to add the label to the editor and set its size and position
     addAndMakeVisible(sideEffectsLabel);
+
+    // DR Filter label 
+    righteousTypeface = juce::Typeface::createSystemTypefaceFor(BinaryData::RighteousRegular_ttf, BinaryData::RighteousRegular_ttfSize);
+    fontSize = 50.0f;
+    juce::Font righteousFont = juce::Font(righteousTypeface).withHeight(fontSize);
+    drFilterLabel.setFont(righteousFont);
+    drFilterLabel.setText("DR Filter", juce::dontSendNotification);
+    addAndMakeVisible(drFilterLabel);
 
 
 
@@ -74,7 +78,7 @@ DRFilterAudioProcessorEditor::DRFilterAudioProcessorEditor(DRFilterAudioProcesso
 
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize(600, 400);
+    setSize(470, 400);
 }
 
 DRFilterAudioProcessorEditor::~DRFilterAudioProcessorEditor()
@@ -107,28 +111,27 @@ void DRFilterAudioProcessorEditor::paint(juce::Graphics& g)
 
 void DRFilterAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
-    
-    // Set the positions of the knobs and labels
-    int knobWidth = 150;
-    int knobHeight = 150;
-    int margin = 10;
-    
-    
+    int margin = 15; // 15px margin between components
+    int border = 10; // 10px border around the window
 
-    
-    cutoffLabel.setBounds(margin, margin, knobWidth, knobHeight / 2);
-    resonanceLabel.setBounds(cutoffLabel.getRight() + margin, margin, knobWidth, knobHeight / 2);
-    driveLabel.setBounds(resonanceLabel.getRight() + margin, margin, knobWidth, knobHeight / 2);
+    // Get the label sizes
+    int drFilterLabelWidth = drFilterLabel.getFont().getStringWidth(drFilterLabel.getText());
+    int drFilterLabelHeight = drFilterLabel.getFont().getHeight();
+    int sideEffectsLabelWidth = sideEffectsLabel.getFont().getStringWidth(sideEffectsLabel.getText());
+    int sideEffectsLabelHeight = sideEffectsLabel.getFont().getHeight();
 
-    cutoffKnob.setBounds(margin, getHeight() / 2 - knobHeight / 2, knobWidth, knobHeight);
-    resonanceKnob.setBounds(cutoffKnob.getX() + cutoffKnob.getWidth() + margin, getHeight() / 2 - knobHeight / 2, knobWidth, knobHeight);
-    driveKnob.setBounds(resonanceKnob.getX() + resonanceKnob.getWidth() + margin, getHeight() / 2 - knobHeight / 2, knobWidth, knobHeight);
+    // Place the drFilterLabel in the top right, respecting the border
+    drFilterLabel.setBounds(getWidth() - drFilterLabelWidth - border, border, drFilterLabelWidth, drFilterLabelHeight);
 
-     sideEffectsLabel.setBounds(getWidth() - 109, getHeight() - 31, 109, 31);
+    // Place the sideEffectsLabel in the top left, respecting the border
+    sideEffectsLabel.setBounds(border, border, sideEffectsLabelWidth, sideEffectsLabelHeight);
 
-    // TODO: Set the position and size of the spectrogram component
+    // Place the cutoffKnob as a main feature taking 200 x 200px on the left below the labels, respecting the border and margin
+    int cutoffKnobSize = 300;
+    cutoffKnob.setBounds(border, std::max(drFilterLabelHeight, sideEffectsLabelHeight) + border + margin, cutoffKnobSize, cutoffKnobSize);
 
+    // Place Drive and resonance to the right of the cutoff knob, taking 100x 100 px stacked on top of each other, respecting the border and margin
+    int knobSize = 150;
+    driveKnob.setBounds(cutoffKnobSize + border + margin, std::max(drFilterLabelHeight, sideEffectsLabelHeight) + border + margin, knobSize, knobSize);
+    resonanceKnob.setBounds(cutoffKnobSize + border + margin, std::max(drFilterLabelHeight, sideEffectsLabelHeight) + knobSize + border + 2 * margin, knobSize, knobSize);
 }
-
