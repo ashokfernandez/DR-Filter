@@ -9,26 +9,31 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+
 //==============================================================================
 DRFilterAudioProcessorEditor::DRFilterAudioProcessorEditor(DRFilterAudioProcessor& p)
-    : AudioProcessorEditor(&p), audioProcessor(p)
-
+    : AudioProcessorEditor(&p), audioProcessor(p),
+      resonanceLookAndFeel(juce::Colours::blue),
+      driveLookAndFeel(juce::Colours::red)
 {
 
     // Set up the knobs
-    cutoffKnob.setSliderStyle(juce::Slider::Rotary);
+    cutoffKnob.setSliderStyle(juce::Slider::RotaryVerticalDrag);
     cutoffKnob.setRange(0.0, 1.0, 0.01);
     cutoffKnob.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
+    cutoffKnob.setLookAndFeel(&cutoffLookAndFeel);  // set the look and feel
     addAndMakeVisible(cutoffKnob);
 
-    resonanceKnob.setSliderStyle(juce::Slider::Rotary);
+    resonanceKnob.setSliderStyle(juce::Slider::RotaryVerticalDrag);
     resonanceKnob.setRange(0.0, 1.0, 0.01);
     resonanceKnob.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
+    resonanceKnob.setLookAndFeel(&resonanceLookAndFeel);  // set the look and feel
     addAndMakeVisible(resonanceKnob);
 
-    driveKnob.setSliderStyle(juce::Slider::Rotary);
+    driveKnob.setSliderStyle(juce::Slider::RotaryVerticalDrag);
     driveKnob.setRange(0.0, 1.0, 0.01);
     driveKnob.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
+    driveKnob.setLookAndFeel(&driveLookAndFeel);  // set the look and feel
     addAndMakeVisible(driveKnob);
 
     // Set up the labels
@@ -44,8 +49,26 @@ DRFilterAudioProcessorEditor::DRFilterAudioProcessorEditor(DRFilterAudioProcesso
     driveLabel.attachToComponent(&driveKnob, false);
     driveLabel.setJustificationType(juce::Justification::centred);
 
-    // Add and make the spectrogram component visible
-    addAndMakeVisible(spectrogram);
+    // To import custom fonts they have to be included as binary data, then you import the type face 
+    // and create a font from it. Then you can set the font of the label to the custom font.
+
+    // Side effects label
+    balooTypeface = juce::Typeface::createSystemTypefaceFor(BinaryData::Baloo2ExtraBold_ttf, BinaryData::Baloo2ExtraBold_ttfSize);
+    float fontSize = 30.0f; 
+    juce::Font balooFont = juce::Font(balooTypeface).withHeight(fontSize);
+    sideEffectsLabel.setFont(balooFont);
+    sideEffectsLabel.setText("side effects", juce::dontSendNotification);
+    addAndMakeVisible(sideEffectsLabel);
+
+    // DR Filter label 
+    righteousTypeface = juce::Typeface::createSystemTypefaceFor(BinaryData::RighteousRegular_ttf, BinaryData::RighteousRegular_ttfSize);
+    fontSize = 50.0f;
+    juce::Font righteousFont = juce::Font(righteousTypeface).withHeight(fontSize);
+    drFilterLabel.setFont(righteousFont);
+    drFilterLabel.setText("DR Filter", juce::dontSendNotification);
+    addAndMakeVisible(drFilterLabel);
+
+
 
     // Create the AudioProcessorValueTreeState::SliderAttachment objects
     cutoffAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "Cutoff", cutoffKnob);
@@ -54,47 +77,73 @@ DRFilterAudioProcessorEditor::DRFilterAudioProcessorEditor(DRFilterAudioProcesso
 
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize(400, 300);
+    setSize(500, 420);
 }
 
 DRFilterAudioProcessorEditor::~DRFilterAudioProcessorEditor()
 {
+    cutoffKnob.setLookAndFeel(nullptr);     // clear the look and feel
+    resonanceKnob.setLookAndFeel(nullptr);  // clear the look and feel
+    driveKnob.setLookAndFeel(nullptr);      // clear the look and feel
 }
 
 //==============================================================================
-void DRFilterAudioProcessorEditor::paint (juce::Graphics& g)
+void DRFilterAudioProcessorEditor::paint(juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    // Create the gradient
+    juce::Colour startColour = juce::Colour::fromString("FF5E5F7C");
+    juce::Colour endColour = juce::Colour::fromString("FF33374B");
+    juce::ColourGradient gradient(startColour, 0, 0, endColour, getWidth(), getHeight(), false);
 
-    // g.setColour (juce::Colours::white);
-    // g.setFont (15.0f);
-    // g.drawFittedText ("DRFilter", getLocalBounds(), juce::Justification::centred, 1);
+    // Set the fill type of the Graphics object
+    g.setFillType(gradient);
+
+    // Fill the component's bounds with the gradient
+    g.fillRect(getLocalBounds());
+
+    // Create a rectangle
+    juce::Rectangle<float> rect = getLocalBounds().reduced(WINDOW_PADDING_PX).toFloat();
+
+    // Set colour and opacity
+    juce::Colour rectColour = juce::Colour::fromString("FF22273B").withAlpha(0.45f);
+
+    // Set fill colour for the rectangle
+    g.setColour(rectColour);
+
+    // Draw the rectangle with rounded corners
+    g.fillRoundedRectangle(rect, 10.0f);
 }
+
+
+
 
 void DRFilterAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
-    
-    // Set the positions of the knobs and labels
-    int spectrogramHeight = 100;
-    int knobWidth = 100;
-    int knobHeight = 100;
-    int margin = 10;
-    
-    spectrogram.setBounds(margin, margin, getWidth() - 2 * margin, spectrogramHeight);
+    int margin = COMPONENT_MARGIN_PX; 
+    int border = WINDOW_PADDING_PX; 
 
-    
-    cutoffLabel.setBounds(margin, margin, knobWidth, knobHeight / 2);
-    resonanceLabel.setBounds(cutoffLabel.getRight() + margin, margin, knobWidth, knobHeight / 2);
-    driveLabel.setBounds(resonanceLabel.getRight() + margin, margin, knobWidth, knobHeight / 2);
+    // Get the label sizes
+    int drFilterLabelWidth = drFilterLabel.getFont().getStringWidth(drFilterLabel.getText());
+    int drFilterLabelHeight = drFilterLabel.getFont().getHeight();
+    int sideEffectsLabelWidth = sideEffectsLabel.getFont().getStringWidth(sideEffectsLabel.getText());
+    int sideEffectsLabelHeight = sideEffectsLabel.getFont().getHeight();
 
-    cutoffKnob.setBounds(margin, getHeight() / 2 - knobHeight / 2, knobWidth, knobHeight);
-    resonanceKnob.setBounds(cutoffKnob.getX() + cutoffKnob.getWidth() + margin, getHeight() / 2 - knobHeight / 2, knobWidth, knobHeight);
-    driveKnob.setBounds(resonanceKnob.getX() + resonanceKnob.getWidth() + margin, getHeight() / 2 - knobHeight / 2, knobWidth, knobHeight);
+    // Place the drFilterLabel in the top right, respecting the border
+    int drFilterShiftX = -5;
+    int drFilterShiftY = 0;
+    drFilterLabel.setBounds(getWidth() - drFilterLabelWidth - border + drFilterShiftX, border + drFilterShiftY, drFilterLabelWidth, drFilterLabelHeight);
 
-    // TODO: Set the position and size of the spectrogram component
+    // Place the sideEffectsLabel in the top left, respecting the border
+    int sideEffectsLabelShiftX = 7;
+    int sideEffectsLabelShiftY = 3;
+    sideEffectsLabel.setBounds(border + sideEffectsLabelShiftX, border + sideEffectsLabelShiftY, sideEffectsLabelWidth, sideEffectsLabelHeight);
 
+    // Place the cutoffKnob as a main feature taking 200 x 200px on the left below the labels, respecting the border and margin
+    int cutoffKnobSize = 300;
+    cutoffKnob.setBounds(border, std::max(drFilterLabelHeight, sideEffectsLabelHeight) + border + margin, cutoffKnobSize, cutoffKnobSize);
+
+    // Place Drive and resonance to the right of the cutoff knob, taking 100x 100 px stacked on top of each other, respecting the border and margin
+    int knobSize = 150;
+    driveKnob.setBounds(cutoffKnobSize + border + margin, std::max(drFilterLabelHeight, sideEffectsLabelHeight) + border + margin, knobSize, knobSize);
+    resonanceKnob.setBounds(cutoffKnobSize + border + margin, std::max(drFilterLabelHeight, sideEffectsLabelHeight) + knobSize + border + 2 * margin, knobSize, knobSize);
 }
-

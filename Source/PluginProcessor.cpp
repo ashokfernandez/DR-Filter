@@ -12,8 +12,6 @@ DRFilterAudioProcessor::DRFilterAudioProcessor()
         apvts(*this, nullptr, "Parameters", createParameterLayout()),
         lowPassCutoffRange(LOWPASS_CUTOFF_MIN, LOWPASS_CUTOFF_MAX),
         highPassCutoffRange(HIGHPASS_CUTOFF_MIN, HIGHPASS_CUTOFF_MAX)
-        // ,
-        // saturationProcessor(apvts)
 
 {
     // Add parameter listeners    

@@ -7,7 +7,27 @@
               pluginCode="Drfl" pluginVST3Category="Filter,Fx" pluginAAXCategory="8192"
               companyWebsite="www.sideeffectsaudio.com" pluginFormats="buildAU,buildStandalone,buildVST3">
   <MAINGROUP id="EkPDKl" name="DR Filter">
+    <GROUP id="{A608E8BF-4DE7-B6C8-0F22-3D759EFC496A}" name="Assets">
+      <FILE id="sNrxDX" name="Baloo2-ExtraBold.ttf" compile="0" resource="1"
+            file="Assets/Baloo2-ExtraBold.ttf"/>
+      <FILE id="aB7j7n" name="FlatKnobRotatable.svg" compile="0" resource="1"
+            file="Assets/FlatKnobRotatable.svg"/>
+      <FILE id="FVZYNh" name="Righteous-Regular.ttf" compile="0" resource="1"
+            file="Assets/Righteous-Regular.ttf"/>
+      <FILE id="zA9EaI" name="SmallKnobRotatable.svg" compile="0" resource="1"
+            file="Assets/SmallKnobRotatable.svg"/>
+      <FILE id="r5MbNR" name="SmallKnobStaticBG.svg" compile="0" resource="1"
+            file="Assets/SmallKnobStaticBG.svg"/>
+    </GROUP>
     <GROUP id="{A558ECD0-2532-A68D-9E27-47566440E0AC}" name="Source">
+      <FILE id="olZ93h" name="CutoffKnobLookAndFeel.cpp" compile="1" resource="0"
+            file="Source/CutoffKnobLookAndFeel.cpp"/>
+      <FILE id="hqBtMv" name="CutoffKnobLookAndFeel.h" compile="0" resource="0"
+            file="Source/CutoffKnobLookAndFeel.h"/>
+      <FILE id="iw32s5" name="SmallKnobLookAndFeel.cpp" compile="1" resource="0"
+            file="Source/SmallKnobLookAndFeel.cpp"/>
+      <FILE id="oV1WzI" name="SmallKnobLookAndFeel.h" compile="0" resource="0"
+            file="Source/SmallKnobLookAndFeel.h"/>
       <FILE id="pf4eZg" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="A3Smgp" name="PluginProcessor.h" compile="0" resource="0"
@@ -15,10 +35,6 @@
       <FILE id="eoPOke" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="hS7OJz" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
-      <FILE id="KiXLU2" name="SpectrogramComponent.cpp" compile="1" resource="0"
-            file="Source/SpectrogramComponent.cpp"/>
-      <FILE id="q0VtOa" name="SpectrogramComponent.h" compile="0" resource="0"
-            file="Source/SpectrogramComponent.h"/>
       <FILE id="qZT3NX" name="Distortion.cpp" compile="1" resource="0" file="Source/Distortion.cpp"/>
       <FILE id="U8Xnec" name="Distortion.h" compile="0" resource="0" file="Source/Distortion.h"/>
     </GROUP>
@@ -27,7 +43,7 @@
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="DR Filter"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="DR Filter" enablePluginBinaryCopyStep="1"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="DR Filter" enablePluginBinaryCopyStep="0"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
@@ -48,7 +64,7 @@
     </XCODE_MAC>
     <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="1" name="Debug" enablePluginBinaryCopyStep="1"/>
         <CONFIGURATION isDebug="0" name="Release" enablePluginBinaryCopyStep="0"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
