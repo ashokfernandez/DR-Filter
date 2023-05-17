@@ -93,9 +93,8 @@ Upon successful completion of the build process, the produced binaries will be a
 
 ## License
 
-This project is licensed under the terms of the GNU General Public License version 3 (GPLv3).
+This project, including the JUCE framework, is licensed under the GNU General Public License version 3 (GPLv3). You can use, modify, and distribute the project under these terms, provided that any modifications are also licensed under GPLv3.
 
-JUCE, the underlying framework used in this project, is also available under the GPLv3 license. This means that you are free to use, modify, and distribute both the project and JUCE, provided that you adhere to the terms and conditions of the GPLv3 license. If you make any modifications or additions to JUCE, those modifications must also be made available under the GPLv3 license.
+The bundled .ttf files from Google Fonts are separately licensed under the SIL Open Font License (OFL) version 1.1. You can use, modify, and distribute these files under the OFL, provided that any modifications are also licensed under the OFL.
 
-If you intend to use JUCE for commercial purposes or create proprietary software with JUCE, you should review the commercial licenses available on the [JUCE website](https://juce.com/get-juce/).
-
+For commercial or proprietary use of JUCE or the Google Fonts, please review the respective commercial licenses on the [JUCE website](https://juce.com/get-juce/) and the [SIL Open Font License website](http://scripts.sil.org/OFL). 
