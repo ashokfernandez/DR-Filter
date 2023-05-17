@@ -15,7 +15,7 @@
 class FlatUIColouredKnob : public juce::LookAndFeel_V4
 {
 public:
-    FlatUIColouredKnob(juce::Colour knobAccentColour);
+    FlatUIColouredKnob(juce::Colour knobMarkerColour);
     ~FlatUIColouredKnob() override;
 
     void drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
@@ -23,7 +23,7 @@ public:
 
 
 private:
-    juce::Colour knobAccentCo;
+    juce::Colour knobMarkerColour;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FlatUIColouredKnob)
 };

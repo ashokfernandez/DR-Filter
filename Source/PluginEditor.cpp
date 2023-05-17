@@ -116,7 +116,7 @@ void DRFilterAudioProcessorEditor::resized()
     int knobHeight = 100;
     int margin = 10;
     
-    spectrogram.setBounds(margin, margin, getWidth() - 2 * margin, spectrogramHeight);
+    
 
     
     cutoffLabel.setBounds(margin, margin, knobWidth, knobHeight / 2);
