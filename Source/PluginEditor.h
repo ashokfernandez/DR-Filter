@@ -11,8 +11,8 @@
 #include <JuceHeader.h>
 
 #include "PluginProcessor.h"
-#include "FlatUIColouredKnob.h"
 #include "SmallKnobLookAndFeel.h"
+#include "CutoffKnobLookAndFeel.h"
 
 #define WINDOW_PADDING_PX 20
 #define COMPONENT_MARGIN_PX 15
@@ -38,7 +38,7 @@ private:
     juce::Slider driveKnob;
 
     // FlatUIColouredKnob instances
-    FlatUIColouredKnob cutoffLookAndFeel;
+    CutoffKnobLookAndFeel cutoffLookAndFeel;
     SmallKnobLookAndFeel resonanceLookAndFeel;
     SmallKnobLookAndFeel driveLookAndFeel;
 

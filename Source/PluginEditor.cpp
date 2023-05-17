@@ -13,13 +13,12 @@
 //==============================================================================
 DRFilterAudioProcessorEditor::DRFilterAudioProcessorEditor(DRFilterAudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p),
-      cutoffLookAndFeel(juce::Colours::green),    // initialize with your desired colours
       resonanceLookAndFeel(juce::Colours::blue),
       driveLookAndFeel(juce::Colours::red)
 {
 
     // Set up the knobs
-    cutoffKnob.setSliderStyle(juce::Slider::Rotary);
+    cutoffKnob.setSliderStyle(juce::Slider::RotaryVerticalDrag);
     cutoffKnob.setRange(0.0, 1.0, 0.01);
     cutoffKnob.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
     cutoffKnob.setLookAndFeel(&cutoffLookAndFeel);  // set the look and feel
@@ -78,7 +77,7 @@ DRFilterAudioProcessorEditor::DRFilterAudioProcessorEditor(DRFilterAudioProcesso
 
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize(500, 400);
+    setSize(500, 420);
 }
 
 DRFilterAudioProcessorEditor::~DRFilterAudioProcessorEditor()

@@ -20,14 +20,14 @@
             file="Assets/SmallKnobStaticBG.svg"/>
     </GROUP>
     <GROUP id="{A558ECD0-2532-A68D-9E27-47566440E0AC}" name="Source">
+      <FILE id="olZ93h" name="CutoffKnobLookAndFeel.cpp" compile="1" resource="0"
+            file="Source/CutoffKnobLookAndFeel.cpp"/>
+      <FILE id="hqBtMv" name="CutoffKnobLookAndFeel.h" compile="0" resource="0"
+            file="Source/CutoffKnobLookAndFeel.h"/>
       <FILE id="iw32s5" name="SmallKnobLookAndFeel.cpp" compile="1" resource="0"
             file="Source/SmallKnobLookAndFeel.cpp"/>
       <FILE id="oV1WzI" name="SmallKnobLookAndFeel.h" compile="0" resource="0"
             file="Source/SmallKnobLookAndFeel.h"/>
-      <FILE id="GaAHpk" name="FlatUIColouredKnob.cpp" compile="1" resource="0"
-            file="Source/FlatUIColouredKnob.cpp"/>
-      <FILE id="SFpii7" name="FlatUIColouredKnob.h" compile="0" resource="0"
-            file="Source/FlatUIColouredKnob.h"/>
       <FILE id="pf4eZg" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="A3Smgp" name="PluginProcessor.h" compile="0" resource="0"
