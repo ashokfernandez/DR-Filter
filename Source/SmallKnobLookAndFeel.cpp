@@ -45,27 +45,29 @@ void SmallKnobLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, in
 
     // Create a DropShadow
     juce::DropShadow dropShadow;
-    dropShadow.colour = juce::Colours::black.withAlpha(0.5f);
-    dropShadow.radius = 5;
-    dropShadow.offset = { 0, 3 };
+    dropShadow.colour = juce::Colours::black.withAlpha(0.8f); 
+    dropShadow.radius = 17;
+    dropShadow.offset = { 0, 10 }; // offset in x and y direction
 
     // Create a DropShadowEffect
     juce::DropShadowEffect shadowEffect;
     shadowEffect.setShadowProperties(dropShadow);
 
-
-
     // Draw rotating layer
     auto knobRotating = juce::Drawable::createFromImageData(BinaryData::SmallKnobRotatable_svg,
-                                                             BinaryData::SmallKnobRotatable_svgSize);
+                                                            BinaryData::SmallKnobRotatable_svgSize);
     if (knobRotating)
     {
         knobRotating->setTransformToFit(juce::Rectangle<float>(x + offsetX, y + offsetY, rotWidth, rotHeight), juce::RectanglePlacement::centred);
         knobRotating->setTransform(knobRotating->getTransform().rotated(customAngle, width * 0.5f, height * 0.5f));
 
+        // Render Drawable into an Image
+        juce::Image image(juce::Image::ARGB, knobRotating->getBounds().getWidth(), knobRotating->getBounds().getHeight(), true);
+        juce::Graphics graphics(image);
+        knobRotating->draw(graphics, 1.0f);
 
-        // Apply DropShadowEffect and draw
-        shadowEffect.applyEffect(*knobRotating, g, 1.0f, 1.0f);
-        // knobRotating->draw(g, 1.0f);
+        // Apply DropShadowEffect
+        shadowEffect.applyEffect(image, g, 1.0f, 1.0f);
     }
+
 }
