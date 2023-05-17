@@ -14,6 +14,8 @@
 #include "FlatUIColouredKnob.h"
 #include "SmallKnobLookAndFeel.h"
 
+#define WINDOW_PADDING_PX 20
+#define COMPONENT_MARGIN_PX 15
 
 //==============================================================================
 /**

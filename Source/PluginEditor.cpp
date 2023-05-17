@@ -25,13 +25,13 @@ DRFilterAudioProcessorEditor::DRFilterAudioProcessorEditor(DRFilterAudioProcesso
     cutoffKnob.setLookAndFeel(&cutoffLookAndFeel);  // set the look and feel
     addAndMakeVisible(cutoffKnob);
 
-    resonanceKnob.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    resonanceKnob.setSliderStyle(juce::Slider::RotaryVerticalDrag);
     resonanceKnob.setRange(0.0, 1.0, 0.01);
     resonanceKnob.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
     resonanceKnob.setLookAndFeel(&resonanceLookAndFeel);  // set the look and feel
     addAndMakeVisible(resonanceKnob);
 
-    driveKnob.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    driveKnob.setSliderStyle(juce::Slider::RotaryVerticalDrag);
     driveKnob.setRange(0.0, 1.0, 0.01);
     driveKnob.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
     driveKnob.setLookAndFeel(&driveLookAndFeel);  // set the look and feel
@@ -78,7 +78,7 @@ DRFilterAudioProcessorEditor::DRFilterAudioProcessorEditor(DRFilterAudioProcesso
 
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize(470, 400);
+    setSize(500, 400);
 }
 
 DRFilterAudioProcessorEditor::~DRFilterAudioProcessorEditor()
@@ -92,27 +92,36 @@ DRFilterAudioProcessorEditor::~DRFilterAudioProcessorEditor()
 void DRFilterAudioProcessorEditor::paint(juce::Graphics& g)
 {
     // Create the gradient
-    juce::Colour startColour = juce::Colour::fromString("#FF535353");
-    juce::Colour endColour = juce::Colour::fromString("#FF302C28");
-    juce::ColourGradient gradient = juce::ColourGradient::vertical(startColour, 0, endColour, (float)getHeight());
-
-    // Create a FillType object and set its gradient
-    juce::FillType fillType;
-    fillType.setGradient(gradient);
+    juce::Colour startColour = juce::Colour::fromString("FF5E5F7C");
+    juce::Colour endColour = juce::Colour::fromString("FF33374B");
+    juce::ColourGradient gradient(startColour, 0, 0, endColour, getWidth(), getHeight(), false);
 
     // Set the fill type of the Graphics object
-    g.setFillType(fillType);
+    g.setFillType(gradient);
 
     // Fill the component's bounds with the gradient
     g.fillRect(getLocalBounds());
+
+    // Create a rectangle
+    juce::Rectangle<float> rect = getLocalBounds().reduced(WINDOW_PADDING_PX).toFloat();
+
+    // Set colour and opacity
+    juce::Colour rectColour = juce::Colour::fromString("FF22273B").withAlpha(0.45f);
+
+    // Set fill colour for the rectangle
+    g.setColour(rectColour);
+
+    // Draw the rectangle with rounded corners
+    g.fillRoundedRectangle(rect, 10.0f);
 }
+
 
 
 
 void DRFilterAudioProcessorEditor::resized()
 {
-    int margin = 15; // 15px margin between components
-    int border = 10; // 10px border around the window
+    int margin = COMPONENT_MARGIN_PX; 
+    int border = WINDOW_PADDING_PX; 
 
     // Get the label sizes
     int drFilterLabelWidth = drFilterLabel.getFont().getStringWidth(drFilterLabel.getText());
@@ -121,10 +130,14 @@ void DRFilterAudioProcessorEditor::resized()
     int sideEffectsLabelHeight = sideEffectsLabel.getFont().getHeight();
 
     // Place the drFilterLabel in the top right, respecting the border
-    drFilterLabel.setBounds(getWidth() - drFilterLabelWidth - border, border, drFilterLabelWidth, drFilterLabelHeight);
+    int drFilterShiftX = -5;
+    int drFilterShiftY = 0;
+    drFilterLabel.setBounds(getWidth() - drFilterLabelWidth - border + drFilterShiftX, border + drFilterShiftY, drFilterLabelWidth, drFilterLabelHeight);
 
     // Place the sideEffectsLabel in the top left, respecting the border
-    sideEffectsLabel.setBounds(border, border, sideEffectsLabelWidth, sideEffectsLabelHeight);
+    int sideEffectsLabelShiftX = 7;
+    int sideEffectsLabelShiftY = 3;
+    sideEffectsLabel.setBounds(border + sideEffectsLabelShiftX, border + sideEffectsLabelShiftY, sideEffectsLabelWidth, sideEffectsLabelHeight);
 
     // Place the cutoffKnob as a main feature taking 200 x 200px on the left below the labels, respecting the border and margin
     int cutoffKnobSize = 300;
