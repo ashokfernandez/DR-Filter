@@ -1,8 +1,8 @@
 /*
   ==============================================================================
 
-    FlatUIColouredKnob.h
-    Created: 14 May 2023 11:00:42pm
+    SmallKnobLookAndFeel.h
+    Created: 17 May 2023 3:32:06pm
     Author:  Ashok Fernandez
 
   ==============================================================================
@@ -12,18 +12,18 @@
 
 #include <JuceHeader.h>
 
-class FlatUIColouredKnob : public juce::LookAndFeel_V4
+class SmallKnobLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
-    FlatUIColouredKnob(juce::Colour knobAccentColour);
-    ~FlatUIColouredKnob() override;
+    SmallKnobLookAndFeel(juce::Colour knobAccentColour);
+    ~SmallKnobLookAndFeel() override;
 
     void drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
                            const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider& slider) override;
 
 
 private:
-    juce::Colour knobAccentCo;
+    juce::Colour knobAccentColour;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FlatUIColouredKnob)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SmallKnobLookAndFeel)
 };

@@ -10,8 +10,18 @@
     <GROUP id="{A608E8BF-4DE7-B6C8-0F22-3D759EFC496A}" name="Assets">
       <FILE id="sNrxDX" name="Baloo2-ExtraBold.ttf" compile="0" resource="1"
             file="Assets/Baloo2-ExtraBold.ttf"/>
+      <FILE id="aB7j7n" name="FlatKnobRotatable.svg" compile="0" resource="1"
+            file="Assets/FlatKnobRotatable.svg"/>
+      <FILE id="zA9EaI" name="SmallKnobRotatable.svg" compile="0" resource="1"
+            file="Assets/SmallKnobRotatable.svg"/>
+      <FILE id="r5MbNR" name="SmallKnobStaticBG.svg" compile="0" resource="1"
+            file="Assets/SmallKnobStaticBG.svg"/>
     </GROUP>
     <GROUP id="{A558ECD0-2532-A68D-9E27-47566440E0AC}" name="Source">
+      <FILE id="iw32s5" name="SmallKnobLookAndFeel.cpp" compile="1" resource="0"
+            file="Source/SmallKnobLookAndFeel.cpp"/>
+      <FILE id="oV1WzI" name="SmallKnobLookAndFeel.h" compile="0" resource="0"
+            file="Source/SmallKnobLookAndFeel.h"/>
       <FILE id="GaAHpk" name="FlatUIColouredKnob.cpp" compile="1" resource="0"
             file="Source/FlatUIColouredKnob.cpp"/>
       <FILE id="SFpii7" name="FlatUIColouredKnob.h" compile="0" resource="0"
@@ -23,10 +33,6 @@
       <FILE id="eoPOke" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="hS7OJz" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
-      <FILE id="KiXLU2" name="SpectrogramComponent.cpp" compile="1" resource="0"
-            file="Source/SpectrogramComponent.cpp"/>
-      <FILE id="q0VtOa" name="SpectrogramComponent.h" compile="0" resource="0"
-            file="Source/SpectrogramComponent.h"/>
       <FILE id="qZT3NX" name="Distortion.cpp" compile="1" resource="0" file="Source/Distortion.cpp"/>
       <FILE id="U8Xnec" name="Distortion.h" compile="0" resource="0" file="Source/Distortion.h"/>
     </GROUP>

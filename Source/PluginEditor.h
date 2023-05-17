@@ -13,6 +13,7 @@
 #include "PluginProcessor.h"
 #include "SpectrogramComponent.h"
 #include "FlatUIColouredKnob.h"
+#include "SmallKnobLookAndFeel.h"
 
 
 //==============================================================================
