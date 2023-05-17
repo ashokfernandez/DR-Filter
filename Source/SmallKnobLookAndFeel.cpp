@@ -46,8 +46,8 @@ void SmallKnobLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, in
     // Create a DropShadow
     juce::DropShadow dropShadow;
     dropShadow.colour = juce::Colours::black.withAlpha(0.8f); 
-    dropShadow.radius = 17;
-    dropShadow.offset = { 0, 10 }; // offset in x and y direction
+    dropShadow.radius = 10;
+    dropShadow.offset = { 0, 7 }; // offset in x and y direction
 
     // Create a DropShadowEffect
     juce::DropShadowEffect shadowEffect;

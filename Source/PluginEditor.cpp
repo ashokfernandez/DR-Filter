@@ -111,9 +111,8 @@ void DRFilterAudioProcessorEditor::resized()
     // subcomponents in your editor..
     
     // Set the positions of the knobs and labels
-    int spectrogramHeight = 100;
-    int knobWidth = 100;
-    int knobHeight = 100;
+    int knobWidth = 150;
+    int knobHeight = 150;
     int margin = 10;
     
     
