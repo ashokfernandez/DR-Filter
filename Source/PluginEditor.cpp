@@ -25,13 +25,13 @@ DRFilterAudioProcessorEditor::DRFilterAudioProcessorEditor(DRFilterAudioProcesso
     cutoffKnob.setLookAndFeel(&cutoffLookAndFeel);  // set the look and feel
     addAndMakeVisible(cutoffKnob);
 
-    resonanceKnob.setSliderStyle(juce::Slider::Rotary);
+    resonanceKnob.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
     resonanceKnob.setRange(0.0, 1.0, 0.01);
     resonanceKnob.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
     resonanceKnob.setLookAndFeel(&resonanceLookAndFeel);  // set the look and feel
     addAndMakeVisible(resonanceKnob);
 
-    driveKnob.setSliderStyle(juce::Slider::Rotary);
+    driveKnob.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
     driveKnob.setRange(0.0, 1.0, 0.01);
     driveKnob.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
     driveKnob.setLookAndFeel(&driveLookAndFeel);  // set the look and feel
