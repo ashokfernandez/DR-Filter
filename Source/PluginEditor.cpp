@@ -74,7 +74,7 @@ DRFilterAudioProcessorEditor::DRFilterAudioProcessorEditor(DRFilterAudioProcesso
 
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize(400, 400);
+    setSize(600, 400);
 }
 
 DRFilterAudioProcessorEditor::~DRFilterAudioProcessorEditor()

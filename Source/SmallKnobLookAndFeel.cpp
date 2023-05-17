@@ -22,6 +22,8 @@ SmallKnobLookAndFeel::~SmallKnobLookAndFeel()
 void SmallKnobLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
                            const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider& slider)
 {
+    // DRAW THE BACKGROUND
+
     // Draw background layer
     auto knobBackground = juce::Drawable::createFromImageData(BinaryData::SmallKnobStaticBG_svg,
                                                                BinaryData::SmallKnobStaticBG_svgSize);
@@ -43,28 +45,26 @@ void SmallKnobLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, in
     int offsetY = (height - rotHeight) / 2;
 
     // Calculate rotation for the rotating layer
-    float customRange = 3 * juce::MathConstants<float>::pi / 2; // range from -3*pi/4 to 3*pi/4 is 1.5*pi
-    float customAngle = (sliderPos - 0.5f) * customRange; // sliderPos - 0.5f ranges from -0.5 to 0.5, so this gives a range from -3*pi/4 to 3*pi/4
+    float knobRange = 3 * juce::MathConstants<float>::pi / 2; // range from -3*pi/4 to 3*pi/4 is 1.5*pi
+    float customAngle = (sliderPos - 0.5f) * knobRange; // sliderPos - 0.5f ranges from -0.5 to 0.5, so this gives a range from -3*pi/4 to 3*pi/4
 
-    // FIRST DRAW THE INDICATOR DOTS AROUND THE PERMIETER OF THE DIAL
+    
+    
+    // DRAW THE INDICATOR DOTS AROUND THE PERMIETER OF THE DIAL
 
     // Draw indicator dots
     int numOfDots = 16; // variable to hold the number of dots
     float dotDiameter = 5; // diameter of the dots
-    float radius = width - rotWidth - dotDiameter - 11; // Tuned by eye 
-    float totalRange = customRange;  // range from -3*pi/4 to 3*pi/4 is 1.5*pi
+    float radius = width - rotWidth - dotDiameter - 11; // Tuned by eye to fit the dots in the right place
     float angleStep; // calculate the angular step for each dot
     
-    DBG (radius);
-
+    // In the special case of three dots, we need to ensure it's placed inbetween the two range indicator dots
     if (numOfDots == 3) {
-        angleStep = totalRange / 2;
+        angleStep = knobRange / 2;
     } else {
-        angleStep = totalRange / (numOfDots - 2);
+        angleStep = knobRange / (numOfDots - 2);
     }
     
-    
-
     // Indicator dots around the perimeter of the dial 
     for (int i = 0; i < numOfDots; ++i)
     {
@@ -91,38 +91,29 @@ void SmallKnobLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, in
         g.fillEllipse(dotX, dotY, dotDiameter, dotDiameter);
         g.setColour(backgroundColor.darker(0.25f));
         g.drawEllipse(dotX, dotY, dotDiameter, dotDiameter, 1.0f);
-
-        // Define color and glow properties
-        bool isDotActive = dotAngle < customAngle;
-        juce::Colour knobAccentColour = juce::Colour::fromString("ffc3a7ff");
-        juce::Colour glowColor = knobAccentColour.withAlpha(0.9f);
-        juce::Colour innerGlowColor = juce::Colour::fromString("fff8f4ff").withAlpha(0.5f);
-
-        // Draw the active dot
-        if (isDotActive)
+        
+        // Draw the active dot style if the dot is behind the current angle of the knob
+        if (dotAngle < customAngle)
         {
+            juce::Colour glowColor = knobAccentColour.withAlpha(0.6f);
+            juce::Colour innerGlowColor = juce::Colour::fromString("fff8f4ff").withAlpha(0.3f);
+
+            // Draw the inner part of the glowing dot
             g.setColour(knobAccentColour);
             g.fillEllipse(dotX + 1, dotY + 1, dotDiameter - 2, dotDiameter - 2);
             
-            // Draw glow effect for active dots
+            // Draw glow effect around inner part
             float glowSize = 0.9f * dotDiameter;
             g.setColour(glowColor);
             g.drawEllipse(dotX - (glowSize - dotDiameter) / 2, dotY - (glowSize - dotDiameter) / 2, glowSize, glowSize, 1.0f);
             g.setColour(innerGlowColor);
             g.drawEllipse(dotX + 1, dotY + 1, dotDiameter - 2, dotDiameter - 2, 1.0f);
         }
-
-
-
-        // // Choose color based on the comparison between dotAngle and customAngle
-        // juce::Colour dotColor = dotAngle < customAngle ? juce::Colours::yellow : juce::Colours::green;
-
-        // // Draw the dot
-        // g.setColour(dotColor);
-        // g.fillEllipse(dotX, dotY, dotDiameter, dotDiameter);
     }
 
-    // DRAW THE DIAL ROTATED, WITH A DROP SHADOW
+
+
+    // DRAW THE INNER ROTATABLE DIAL, WITH A DROP SHADOW
 
     // Create a DropShadow
     juce::DropShadow dropShadow;
