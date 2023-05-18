@@ -21,66 +21,69 @@ CutoffKnobLookAndFeel::~CutoffKnobLookAndFeel()
 void CutoffKnobLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
                            const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider& slider)
 {
-    // // DRAW THE BACKGROUND
-    // std::unique_ptr<juce::Drawable> knobBackground;
-    // FilterMode currentFilterMode;
-
-    // // Determine the operating mode of the filter - bypass, lowpass or highpass 
-    // // Filte is bypassed 5 points either side of halfway, replace this with preprocessor #define FILTER_DEAD_ZONE 
-    // auto currentSliderValue = slider.getValue();
-    // if (currentSliderValue < -FILTER_DEAD_ZONE) {
-    //     currentFilterMode = FilterMode::lowpass;
-    //     knobBackground = juce::Drawable::createFromImageData(BinaryData::CutoffKnobLowpassBG_svg,
-    //                                                                BinaryData::CutoffKnobLowpassBG_svgSize);
-    // } else if (currentSliderValue > FILTER_DEAD_ZONE) {
-    //     currentFilterMode = FilterMode::highpass;
-    //     knobBackground = juce::Drawable::createFromImageData(BinaryData::CutoffKnobHighpassBG_svg,
-    //                                                                BinaryData::CutoffKnobHighpassBG_svgSize);
-    // } else {
-    //     currentFilterMode = FilterMode::bypass;
-    //     knobBackground = juce::Drawable::createFromImageData(BinaryData::CutoffKnobBypassBG_svg,
-    //                                                                BinaryData::CutoffKnobBypassBG_svgSize);
-    // }
-
-    // if (knobBackground)
-    // {
-    //     knobBackground->drawWithin(g, juce::Rectangle<float>(x, y, width, height),
-    //                                juce::RectanglePlacement::centred, 1.0f);
-    // }
-    // DRAW THE BACKGROUND
-    // DRAW THE BACKGROUND
-    // DRAW THE BACKGROUND
-    juce::Image knobBackground;
+    // DRAW THE BACKGROUND SVG
+    std::unique_ptr<juce::Drawable> knobBackground;
     FilterMode currentFilterMode;
 
-    // Determine the operating mode of the filter - bypass, lowpass, or highpass
-    // Filter is bypassed 5 points either side of halfway, replace this with preprocessor #define FILTER_DEAD_ZONE 
+    // Determine the operating mode of the filter - bypass, lowpass or highpass 
+    // Filte is bypassed 5 points either side of halfway, replace this with preprocessor #define FILTER_DEAD_ZONE 
     auto currentSliderValue = slider.getValue();
     if (currentSliderValue < -FILTER_DEAD_ZONE) {
         currentFilterMode = FilterMode::lowpass;
-        knobBackground = juce::ImageCache::getFromMemory(BinaryData::CutoffKnobLowpassBG_png,
-                                                        BinaryData::CutoffKnobLowpassBG_pngSize);
+        knobBackground = juce::Drawable::createFromImageData(BinaryData::CutoffKnobLowpassBG_svg,
+                                                                   BinaryData::CutoffKnobLowpassBG_svgSize);
     } else if (currentSliderValue > FILTER_DEAD_ZONE) {
         currentFilterMode = FilterMode::highpass;
-        knobBackground = juce::ImageCache::getFromMemory(BinaryData::CutoffKnobHighpassBG_png,
-                                                        BinaryData::CutoffKnobHighpassBG_pngSize);
+        knobBackground = juce::Drawable::createFromImageData(BinaryData::CutoffKnobHighpassBG_svg,
+                                                                   BinaryData::CutoffKnobHighpassBG_svgSize);
     } else {
         currentFilterMode = FilterMode::bypass;
-        knobBackground = juce::ImageCache::getFromMemory(BinaryData::CutoffKnobBypassBG_png,
-                                                        BinaryData::CutoffKnobBypassBG_pngSize);
+        knobBackground = juce::Drawable::createFromImageData(BinaryData::CutoffKnobBypassBG_svg,
+                                                                   BinaryData::CutoffKnobBypassBG_svgSize);
     }
 
-    if (!knobBackground.isNull())
+    if (knobBackground)
     {
-        // Scale the image to fit the desired dimensions
-        float scaleX = width / (float)knobBackground.getWidth();
-        float scaleY = height / (float)knobBackground.getHeight();
-        float scale = std::min(scaleX, scaleY);
-        
-        juce::Rectangle<float> targetBounds(x, y, knobBackground.getWidth() * scale, knobBackground.getHeight() * scale);
-        targetBounds = targetBounds.withCentre(juce::Point<float>(x + width / 2.0f, y + height / 2.0f));
-        g.drawImage(knobBackground, targetBounds);
+        knobBackground->drawWithin(g, juce::Rectangle<float>(x, y, width, height),
+                                   juce::RectanglePlacement::centred, 1.0f);
     }
+    // END SVG
+    
+    
+    // // DRAW THE BACKGROUND PNG
+    // juce::Image knobBackground;
+    // FilterMode currentFilterMode;
+
+    // // Determine the operating mode of the filter - bypass, lowpass, or highpass
+    // // Filter is bypassed 5 points either side of halfway, replace this with preprocessor #define FILTER_DEAD_ZONE 
+    // auto currentSliderValue = slider.getValue();
+    // if (currentSliderValue < -FILTER_DEAD_ZONE) {
+    //     currentFilterMode = FilterMode::lowpass;
+    //     knobBackground = juce::ImageCache::getFromMemory(BinaryData::CutoffKnobLowpassBG_png,
+    //                                                     BinaryData::CutoffKnobLowpassBG_pngSize);
+    // } else if (currentSliderValue > FILTER_DEAD_ZONE) {
+    //     currentFilterMode = FilterMode::highpass;
+    //     knobBackground = juce::ImageCache::getFromMemory(BinaryData::CutoffKnobHighpassBG_png,
+    //                                                     BinaryData::CutoffKnobHighpassBG_pngSize);
+    // } else {
+    //     currentFilterMode = FilterMode::bypass;
+    //     knobBackground = juce::ImageCache::getFromMemory(BinaryData::CutoffKnobBypassBG_png,
+    //                                                     BinaryData::CutoffKnobBypassBG_pngSize);
+    // }
+
+    // if (!knobBackground.isNull())
+    // {
+    //     // Scale the image to fit the desired dimensions
+    //     float scaleX = width / (float)knobBackground.getWidth();
+    //     float scaleY = height / (float)knobBackground.getHeight();
+    //     float scale = std::min(scaleX, scaleY);
+        
+    //     juce::Rectangle<float> targetBounds(x, y, knobBackground.getWidth() * scale, knobBackground.getHeight() * scale);
+    //     targetBounds = targetBounds.withCentre(juce::Point<float>(x + width / 2.0f, y + height / 2.0f));
+    //     g.drawImage(knobBackground, targetBounds);
+    // }
+
+    // /// END PNG
 
 
     // Calculate scale ratio for shrinking the rotating layer on top of the background 
@@ -98,7 +101,7 @@ void CutoffKnobLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, i
     float rotationAngle = (sliderPos - 0.5f) * knobRange; // sliderPos - 0.5f ranges from -0.5 to 0.5, so this gives a range from -3*pi/4 to 3*pi/4
     
     // DRAW THE INDICATOR BARS AROUND THE PERIMETER OF THE DIAL
-    int numOfBarsPerSide = 27; 
+    int numOfBarsPerSide = 25; 
     float barWidth = 5.0f;
     float barHeight = 25.0f;
     float barCornerRadius = 2.0f;
@@ -136,8 +139,12 @@ void CutoffKnobLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, i
                 juce::Colour activeColor; 
                 switch (mode) {
                     case FilterMode::bypass:
-                        // activeColor = juce::Colour::fromString("ffB4181D");
-                        activeColor = juce::Colours::white;
+                        if (i % 8 == 0)
+                            // activeColor = juce::Colours::white.withAlpha(0.4f);
+                            activeColor = juce::Colours::white.withAlpha(0.6f);
+                        else
+                            activeColor = juce::Colour::fromString("ffB4181D").withAlpha(0.6f);
+                            
                         break;
                     case FilterMode::lowpass:
                         activeColor = juce::Colour::fromString("ff0BA6D8");
