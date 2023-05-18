@@ -128,15 +128,15 @@ void DRFilterAudioProcessorEditor::resized()
     int sideEffectsLabelWidth = sideEffectsLabel.getFont().getStringWidth(sideEffectsLabel.getText());
     int sideEffectsLabelHeight = sideEffectsLabel.getFont().getHeight();
 
-    // Place the drFilterLabel in the top right, respecting the border
-    int drFilterShiftX = -5;
+    // Place the drFilterLabel in the top left, respecting the border
+    int drFilterShiftX = 5;
     int drFilterShiftY = 0;
-    drFilterLabel.setBounds(getWidth() - drFilterLabelWidth - border + drFilterShiftX, border + drFilterShiftY, drFilterLabelWidth, drFilterLabelHeight);
+    drFilterLabel.setBounds(border + drFilterShiftX, border + drFilterShiftY, drFilterLabelWidth, drFilterLabelHeight);
 
-    // Place the sideEffectsLabel in the top left, respecting the border
-    int sideEffectsLabelShiftX = 7;
+    // Place the sideEffectsLabel in the top right, respecting the border
+    int sideEffectsLabelShiftX = -5;
     int sideEffectsLabelShiftY = 3;
-    sideEffectsLabel.setBounds(border + sideEffectsLabelShiftX, border + sideEffectsLabelShiftY, sideEffectsLabelWidth, sideEffectsLabelHeight);
+    sideEffectsLabel.setBounds(getWidth() - sideEffectsLabelWidth - border + sideEffectsLabelShiftX, border + sideEffectsLabelShiftY, sideEffectsLabelWidth, sideEffectsLabelHeight);
 
     // Place the cutoffKnob as a main feature taking 200 x 200px on the left below the labels, respecting the border and margin
     int cutoffKnobSize = 300;

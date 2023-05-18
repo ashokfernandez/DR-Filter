@@ -79,50 +79,50 @@ void CutoffKnobLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, i
     }
     
     // Indicator dots around the perimeter of the dial 
-    // for (int i = 0; i < numOfDots; ++i)
-    // {
-    //     // Calculate angle for each dot
-    //     float dotAngle;
-    //     if (i == 0) {
-    //         dotAngle = -3 * juce::MathConstants<float>::pi / 4;
-    //     } else if (i == numOfDots - 1) {
-    //         dotAngle = (3 * juce::MathConstants<float>::pi / 4) - 0.00001; // Take a tiny bit off so the final dot lights up
-    //     } else {
-    //         dotAngle = -3 * juce::MathConstants<float>::pi / 4 + (i * angleStep);
-    //     }
+    for (int i = 0; i < numOfDots; ++i)
+    {
+        // Calculate angle for each dot
+        float dotAngle;
+        if (i == 0) {
+            dotAngle = -3 * juce::MathConstants<float>::pi / 4;
+        } else if (i == numOfDots - 1) {
+            dotAngle = (3 * juce::MathConstants<float>::pi / 4) - 0.00001; // Take a tiny bit off so the final dot lights up
+        } else {
+            dotAngle = -3 * juce::MathConstants<float>::pi / 4 + (i * angleStep);
+        }
 
-    //     // Adjust the angle due to the coordinate system of JUCE
-    //     float adjustedDotAngle = dotAngle - juce::MathConstants<float>::pi / 2;
+        // Adjust the angle due to the coordinate system of JUCE
+        float adjustedDotAngle = dotAngle - juce::MathConstants<float>::pi / 2;
 
-    //     // Calculate dot position
-    //     int dotX = x + width / 2 + radius * std::cos(adjustedDotAngle) - dotDiameter / 2;
-    //     int dotY = y + height / 2 + radius * std::sin(adjustedDotAngle) - dotDiameter / 2;
+        // Calculate dot position
+        int dotX = x + width / 2 + radius * std::cos(adjustedDotAngle) - dotDiameter / 2;
+        int dotY = y + height / 2 + radius * std::sin(adjustedDotAngle) - dotDiameter / 2;
 
-    //     // Background dot
-    //     juce::Colour backgroundColor = juce::Colour::fromString("ff25293B");
-    //     g.setColour(backgroundColor);
-    //     g.fillEllipse(dotX, dotY, dotDiameter, dotDiameter);
-    //     g.setColour(backgroundColor.darker(0.25f));
-    //     g.drawEllipse(dotX, dotY, dotDiameter, dotDiameter, 1.0f);
+        // Background dot
+        juce::Colour backgroundColor = juce::Colour::fromString("ff25293B");
+        g.setColour(backgroundColor);
+        g.fillEllipse(dotX, dotY, dotDiameter, dotDiameter);
+        g.setColour(backgroundColor.darker(0.25f));
+        g.drawEllipse(dotX, dotY, dotDiameter, dotDiameter, 1.0f);
         
-    //     // Draw the active dot style if the dot is behind the current angle of the knob
-    //     if (dotAngle < customAngle)
-    //     {
-    //         juce::Colour glowColor = juce::Colours::yellow.withAlpha(0.3f);
-    //         juce::Colour innerGlowColor = juce::Colour::fromString("fff8f4ff").withAlpha(0.3f);
+        // Draw the active dot style if the dot is behind the current angle of the knob
+        if (dotAngle < customAngle)
+        {
+            juce::Colour glowColor = juce::Colours::yellow.withAlpha(0.3f);
+            juce::Colour innerGlowColor = juce::Colour::fromString("fff8f4ff").withAlpha(0.3f);
 
-    //         // Draw the inner part of the glowing dot
-    //         g.setColour(juce::Colours::yellow.withAlpha(0.3f));
-    //         g.fillEllipse(dotX + 1, dotY + 1, dotDiameter - 2, dotDiameter - 2);
+            // Draw the inner part of the glowing dot
+            g.setColour(juce::Colours::yellow.withAlpha(0.3f));
+            g.fillEllipse(dotX + 1, dotY + 1, dotDiameter - 2, dotDiameter - 2);
             
-    //         // Draw glow effect around inner part
-    //         float glowSize = 0.9f * dotDiameter;
-    //         g.setColour(glowColor);
-    //         g.drawEllipse(dotX - (glowSize - dotDiameter) / 2, dotY - (glowSize - dotDiameter) / 2, glowSize, glowSize, 1.0f);
-    //         g.setColour(innerGlowColor);
-    //         g.drawEllipse(dotX + 1, dotY + 1, dotDiameter - 2, dotDiameter - 2, 1.0f);
-    //     }
-    // }
+            // Draw glow effect around inner part
+            float glowSize = 0.9f * dotDiameter;
+            g.setColour(glowColor);
+            g.drawEllipse(dotX - (glowSize - dotDiameter) / 2, dotY - (glowSize - dotDiameter) / 2, glowSize, glowSize, 1.0f);
+            g.setColour(innerGlowColor);
+            g.drawEllipse(dotX + 1, dotY + 1, dotDiameter - 2, dotDiameter - 2, 1.0f);
+        }
+    }
 
 
 
