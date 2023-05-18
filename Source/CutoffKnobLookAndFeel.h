@@ -11,6 +11,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "Config.h"
 
 class CutoffKnobLookAndFeel : public juce::LookAndFeel_V4
 {
@@ -23,7 +24,11 @@ public:
 
 
 private:
-
+    enum FilterMode {
+        bypass,
+        lowpass,
+        highpass
+    };
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CutoffKnobLookAndFeel)
 };
 
