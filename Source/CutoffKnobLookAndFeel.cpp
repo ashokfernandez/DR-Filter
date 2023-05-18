@@ -21,23 +21,73 @@ CutoffKnobLookAndFeel::~CutoffKnobLookAndFeel()
 void CutoffKnobLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
                            const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider& slider)
 {
-    // DRAW THE BACKGROUND
+    // // DRAW THE BACKGROUND
+    // std::unique_ptr<juce::Drawable> knobBackground;
+    // FilterMode currentFilterMode;
 
-    // Draw background layer
-    auto knobBackground = juce::Drawable::createFromImageData(BinaryData::SmallKnobStaticBG_svg,
-                                                               BinaryData::SmallKnobStaticBG_svgSize);
-    if (knobBackground)
-    {
-        knobBackground->drawWithin(g, juce::Rectangle<float>(x, y, width, height),
-                                   juce::RectanglePlacement::centred, 1.0f);
+    // // Determine the operating mode of the filter - bypass, lowpass or highpass 
+    // // Filte is bypassed 5 points either side of halfway, replace this with preprocessor #define FILTER_DEAD_ZONE 
+    // auto currentSliderValue = slider.getValue();
+    // if (currentSliderValue < -FILTER_DEAD_ZONE) {
+    //     currentFilterMode = FilterMode::lowpass;
+    //     knobBackground = juce::Drawable::createFromImageData(BinaryData::CutoffKnobLowpassBG_svg,
+    //                                                                BinaryData::CutoffKnobLowpassBG_svgSize);
+    // } else if (currentSliderValue > FILTER_DEAD_ZONE) {
+    //     currentFilterMode = FilterMode::highpass;
+    //     knobBackground = juce::Drawable::createFromImageData(BinaryData::CutoffKnobHighpassBG_svg,
+    //                                                                BinaryData::CutoffKnobHighpassBG_svgSize);
+    // } else {
+    //     currentFilterMode = FilterMode::bypass;
+    //     knobBackground = juce::Drawable::createFromImageData(BinaryData::CutoffKnobBypassBG_svg,
+    //                                                                BinaryData::CutoffKnobBypassBG_svgSize);
+    // }
+
+    // if (knobBackground)
+    // {
+    //     knobBackground->drawWithin(g, juce::Rectangle<float>(x, y, width, height),
+    //                                juce::RectanglePlacement::centred, 1.0f);
+    // }
+    // DRAW THE BACKGROUND
+    // DRAW THE BACKGROUND
+    // DRAW THE BACKGROUND
+    juce::Image knobBackground;
+    FilterMode currentFilterMode;
+
+    // Determine the operating mode of the filter - bypass, lowpass, or highpass
+    // Filter is bypassed 5 points either side of halfway, replace this with preprocessor #define FILTER_DEAD_ZONE 
+    auto currentSliderValue = slider.getValue();
+    if (currentSliderValue < -FILTER_DEAD_ZONE) {
+        currentFilterMode = FilterMode::lowpass;
+        knobBackground = juce::ImageCache::getFromMemory(BinaryData::CutoffKnobLowpassBG_png,
+                                                        BinaryData::CutoffKnobLowpassBG_pngSize);
+    } else if (currentSliderValue > FILTER_DEAD_ZONE) {
+        currentFilterMode = FilterMode::highpass;
+        knobBackground = juce::ImageCache::getFromMemory(BinaryData::CutoffKnobHighpassBG_png,
+                                                        BinaryData::CutoffKnobHighpassBG_pngSize);
+    } else {
+        currentFilterMode = FilterMode::bypass;
+        knobBackground = juce::ImageCache::getFromMemory(BinaryData::CutoffKnobBypassBG_png,
+                                                        BinaryData::CutoffKnobBypassBG_pngSize);
     }
+
+    if (!knobBackground.isNull())
+    {
+        // Scale the image to fit the desired dimensions
+        float scaleX = width / (float)knobBackground.getWidth();
+        float scaleY = height / (float)knobBackground.getHeight();
+        float scale = std::min(scaleX, scaleY);
+        
+        juce::Rectangle<float> targetBounds(x, y, knobBackground.getWidth() * scale, knobBackground.getHeight() * scale);
+        targetBounds = targetBounds.withCentre(juce::Point<float>(x + width / 2.0f, y + height / 2.0f));
+        g.drawImage(knobBackground, targetBounds);
+    }
+
 
     // Calculate scale ratio for shrinking the rotating layer on top of the background 
     // comes from the size of the two layers in the Figma designs
     float rotationLayerWidth = 266.0f;
     float backgroundLayerWidth = 488.0f;
     float scaleRatio = rotationLayerWidth / backgroundLayerWidth;
-
     int rotWidth = int(width * scaleRatio);
     int rotHeight = int(height * scaleRatio);
     int offsetX = (width - rotWidth) / 2;
@@ -45,72 +95,76 @@ void CutoffKnobLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, i
 
     // Calculate rotation for the rotating layer
     float knobRange = 3 * juce::MathConstants<float>::pi / 2; // range from -3*pi/4 to 3*pi/4 is 1.5*pi
-    float customAngle = (sliderPos - 0.5f) * knobRange; // sliderPos - 0.5f ranges from -0.5 to 0.5, so this gives a range from -3*pi/4 to 3*pi/4
-
+    float rotationAngle = (sliderPos - 0.5f) * knobRange; // sliderPos - 0.5f ranges from -0.5 to 0.5, so this gives a range from -3*pi/4 to 3*pi/4
     
-    
-    // DRAW THE INDICATOR DOTS bAROUND THE PERMIETER OF THE DIAL
+    // DRAW THE INDICATOR BARS AROUND THE PERIMETER OF THE DIAL
+    int numOfBarsPerSide = 27; 
+    float barWidth = 5.0f;
+    float barHeight = 25.0f;
+    float barCornerRadius = 2.0f;
+    float radius = width - rotWidth - barHeight + 7; // Tuned by eye to fit the dots in the right place
+    // float angleStep = knobRange / (numOfBarsPerSide - 2); 
 
-    // Draw indicator dots
-    int numOfDots = 32; // variable to hold the number of dots
-    float dotDiameter = 5; // diameter of the dots
-    float radius = width - rotWidth - dotDiameter - 11; // Tuned by eye to fit the dots in the right place
-    float angleStep; // calculate the angular step for each dot
-    
-    // In the special case of three dots, we need to ensure it's placed inbetween the two range indicator dots
-    if (numOfDots == 3) {
-        angleStep = knobRange / 2;
-    } else {
-        angleStep = knobRange / (numOfDots - 2);
-    }
-    
-    // Indicator dots around the perimeter of the dial 
-    for (int i = 0; i < numOfDots; ++i)
-    {
-        // Calculate angle for each dot
-        float dotAngle;
-        if (i == 0) {
-            dotAngle = -3 * juce::MathConstants<float>::pi / 4;
-        } else if (i == numOfDots - 1) {
-            dotAngle = (3 * juce::MathConstants<float>::pi / 4) - 0.00001; // Take a tiny bit off so the final dot lights up
-        } else {
-            dotAngle = -3 * juce::MathConstants<float>::pi / 4 + (i * angleStep);
-        }
+    // The start and end of the angles for different filter modes
+    auto drawBars = [&](float startAngle, float endAngle, FilterMode mode) {
+        float angleStep = (endAngle - startAngle) / (numOfBarsPerSide - 1);
 
-        // Adjust the angle due to the coordinate system of JUCE
-        float adjustedDotAngle = dotAngle - juce::MathConstants<float>::pi / 2;
+        for (int i = 0; i < numOfBarsPerSide; ++i) {
+            float barAngle = startAngle + i * angleStep;
+            float adjustedDotAngle = barAngle - juce::MathConstants<float>::pi / 2;
 
-        // Calculate dot position
-        int dotX = x + width / 2 + radius * std::cos(adjustedDotAngle) - dotDiameter / 2;
-        int dotY = y + height / 2 + radius * std::sin(adjustedDotAngle) - dotDiameter / 2;
+            int offsetY = -10;
+            int offsetX = 0;
+            int dotX = offsetX + x + width / 2 + radius * std::cos(adjustedDotAngle) - barWidth / 2;
+            int dotY = offsetY + y + height / 2 + radius * std::sin(adjustedDotAngle) - barWidth / 2;
 
-        // Background dot
-        juce::Colour backgroundColor = juce::Colour::fromString("ff25293B");
-        g.setColour(backgroundColor);
-        g.fillEllipse(dotX, dotY, dotDiameter, dotDiameter);
-        g.setColour(backgroundColor.darker(0.25f));
-        g.drawEllipse(dotX, dotY, dotDiameter, dotDiameter, 1.0f);
-        
-        // Draw the active dot style if the dot is behind the current angle of the knob
-        if (dotAngle < customAngle)
-        {
-            juce::Colour glowColor = juce::Colours::yellow.withAlpha(0.3f);
-            juce::Colour innerGlowColor = juce::Colour::fromString("fff8f4ff").withAlpha(0.3f);
-
-            // Draw the inner part of the glowing dot
-            g.setColour(juce::Colours::yellow.withAlpha(0.3f));
-            g.fillEllipse(dotX + 1, dotY + 1, dotDiameter - 2, dotDiameter - 2);
+            // Draw the background bar
+            juce::Path roundedRectangle;
+            roundedRectangle.addRoundedRectangle(dotX, dotY, barWidth, barHeight, barCornerRadius);
+            juce::AffineTransform rotation = juce::AffineTransform::rotation(barAngle, dotX + barWidth / 2, dotY + barHeight / 2);
+            g.setColour(juce::Colour::fromString("ff25293B"));
+            g.fillPath(roundedRectangle, rotation);
             
-            // Draw glow effect around inner part
-            float glowSize = 0.9f * dotDiameter;
-            g.setColour(glowColor);
-            g.drawEllipse(dotX - (glowSize - dotDiameter) / 2, dotY - (glowSize - dotDiameter) / 2, glowSize, glowSize, 1.0f);
-            g.setColour(innerGlowColor);
-            g.drawEllipse(dotX + 1, dotY + 1, dotDiameter - 2, dotDiameter - 2, 1.0f);
+            // Draw the active bar overlay if the bar is between the center and the current angle
+            // Add a tiny bit on to ensure the last bar lights up
+            bool isActive = (mode == FilterMode::lowpass && barAngle > rotationAngle - 0.1f) ||
+                            (mode == FilterMode::highpass && barAngle < rotationAngle + 0.1f) ||
+                            (mode == FilterMode::bypass);
+
+            if (isActive) {
+                // Define the glowing color.
+                juce::Colour activeColor; 
+                switch (mode) {
+                    case FilterMode::bypass:
+                        // activeColor = juce::Colour::fromString("ffB4181D");
+                        activeColor = juce::Colours::white;
+                        break;
+                    case FilterMode::lowpass:
+                        activeColor = juce::Colour::fromString("ff0BA6D8");
+                        break;
+                    case FilterMode::highpass:
+                        activeColor = juce::Colour::fromString("ff34D846");
+                        break;
+                }
+
+                // Draw the active style of the bar
+                juce::Path activeRoundedRectangle;
+                activeRoundedRectangle.addRoundedRectangle(dotX+1, dotY+1, barWidth-2, barHeight-2, barCornerRadius);
+                g.setColour(activeColor);
+                g.fillPath(activeRoundedRectangle, rotation);
+            }
         }
-    }
+    };
 
+    // The start and end of the angles for different filter modes
+    float lowpassStartAngle = -3 * juce::MathConstants<float>::pi / 4;
+    float lowpassEndAngle = -juce::MathConstants<float>::pi / 7;
 
+    float highpassStartAngle = juce::MathConstants<float>::pi / 7;
+    float highpassEndAngle = 3 * juce::MathConstants<float>::pi / 4;
+
+    drawBars(lowpassStartAngle, lowpassEndAngle, currentFilterMode);
+    drawBars(highpassStartAngle, highpassEndAngle, currentFilterMode);
 
     // DRAW THE INNER ROTATABLE DIAL, WITH A DROP SHADOW
 
@@ -130,7 +184,7 @@ void CutoffKnobLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, i
     if (knobRotating)
     {
         knobRotating->setTransformToFit(juce::Rectangle<float>(x + offsetX, y + offsetY, rotWidth, rotHeight), juce::RectanglePlacement::centred);
-        knobRotating->setTransform(knobRotating->getTransform().rotated(customAngle, width * 0.5f, height * 0.5f));
+        knobRotating->setTransform(knobRotating->getTransform().rotated(rotationAngle, width * 0.5f, height * 0.5f));
 
         // Render Drawable into an Image
         juce::Image image(juce::Image::ARGB, knobRotating->getBounds().getWidth(), knobRotating->getBounds().getHeight(), true);

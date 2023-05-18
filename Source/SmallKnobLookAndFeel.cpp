@@ -53,7 +53,7 @@ void SmallKnobLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, in
     // DRAW THE INDICATOR DOTS bAROUND THE PERMIETER OF THE DIAL
 
     // Draw indicator dots
-    int numOfDots = 16; // variable to hold the number of dots
+    int numOfDots = 19; // variable to hold the number of dots
     float dotDiameter = 5; // diameter of the dots
     float radius = width - rotWidth - dotDiameter - 11; // Tuned by eye to fit the dots in the right place
     float angleStep; // calculate the angular step for each dot
