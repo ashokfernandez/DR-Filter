@@ -10,6 +10,12 @@
     <GROUP id="{A608E8BF-4DE7-B6C8-0F22-3D759EFC496A}" name="Assets">
       <FILE id="sNrxDX" name="Baloo2-ExtraBold.ttf" compile="0" resource="1"
             file="Assets/Baloo2-ExtraBold.ttf"/>
+      <FILE id="m2TZK5" name="CutoffKnobBypassBG.svg" compile="0" resource="1"
+            file="Assets/CutoffKnobBypassBG.svg"/>
+      <FILE id="EBvRc8" name="CutoffKnobHighpassBG.svg" compile="0" resource="1"
+            file="Assets/CutoffKnobHighpassBG.svg"/>
+      <FILE id="DyeBjN" name="CutoffKnobLowpassBG.svg" compile="0" resource="1"
+            file="Assets/CutoffKnobLowpassBG.svg"/>
       <FILE id="aB7j7n" name="FlatKnobRotatable.svg" compile="0" resource="1"
             file="Assets/FlatKnobRotatable.svg"/>
       <FILE id="FVZYNh" name="Righteous-Regular.ttf" compile="0" resource="1"
