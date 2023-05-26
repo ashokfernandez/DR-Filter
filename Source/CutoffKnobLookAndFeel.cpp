@@ -105,7 +105,7 @@ void CutoffKnobLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, i
     float barWidth = 5.0f;
     float barHeight = 25.0f;
     float barCornerRadius = 2.0f;
-    float radius = width - rotWidth - barHeight + 7; // Tuned by eye to fit the dots in the right place
+    float radius = width - rotWidth - barHeight + 13; // Tuned by eye to fit the dots in the right place
     // float angleStep = knobRange / (numOfBarsPerSide - 2); 
 
     // The start and end of the angles for different filter modes
