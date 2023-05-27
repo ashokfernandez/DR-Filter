@@ -95,24 +95,27 @@ jobs:
         echo "Compile binaries"
         cmake --build Builds --parallel --config Release
 
-    - name: List directory contents
-      run: ls -R "Builds/"
+    - name: Create MacOS .zip
+      if: matrix.os == 'macos-latest'
+      run: zip -r DR-Filter-MacOS.zip ./Builds/Release
+
+    - name: Create Windows .zip
+      if: matrix.os == 'windows-latest'
+      run: Compress-Archive -Path ./Builds/Release/VST3 -DestinationPath DR-Filter-Windows.zip
 
     - name: Upload MacOS Binaries
       if: matrix.os == 'macos-latest'
       uses: actions/upload-artifact@v3
       with:
         name: DR-Filter-MacOS
-        path: |
-          ./Builds/Release/DR\ Filter.vst3
-          ./Builds/Release/DR\ Filter.component
+        path: DR-Filter-MacOS.zip
 
     - name: Upload Windows Binaries
       if: matrix.os == 'windows-latest'
       uses: actions/upload-artifact@v3
       with:
         name: DR-Filter-Windows
-        path: "Builds/Release/VST3/DR Filter.vst3"
+        path: DR-Filter-Windows.zip
 
   release:
     needs: build
